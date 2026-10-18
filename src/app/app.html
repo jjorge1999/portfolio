@@ -1,0 +1,361 @@
+<div class="depth" aria-hidden="true">
+  <span class="dots" style="--sp:0.06"></span>
+  <span class="blob b1" style="--sp:0.12; top:-10vh; left:-12vw"></span>
+  <span class="blob b2" style="--sp:0.28; top:70vh; right:-14vw"></span>
+  <span class="blob b3" style="--sp:0.2; top:190vh; left:-10vw"></span>
+  <span class="blob b2" style="--sp:0.34; top:300vh; right:-8vw"></span>
+  <span class="ring" style="--sp:0.45; --rot:1; top:28vh; right:8vw; width:180px"></span>
+  <span class="ring" style="--sp:0.62; --rot:-1; top:150vh; left:6vw; width:120px"></span>
+  <span class="ring" style="--sp:0.38; --rot:1; top:260vh; right:12vw; width:220px"></span>
+  <span class="glyph" style="--sp:0.55; --rot:1; top:58vh; left:4vw">&lt;/&gt;</span>
+  <span class="glyph" style="--sp:0.75; --rot:-1; top:110vh; right:6vw">{{ '{ }' }}</span>
+  <span class="glyph" style="--sp:0.42; --rot:1; top:175vh; right:22vw">=&gt;</span>
+  <span class="glyph" style="--sp:0.68; --rot:-1; top:230vh; left:10vw">₱</span>
+  <span class="glyph" style="--sp:0.5; --rot:1; top:320vh; left:46vw">01</span>
+  <span class="glyph" style="--sp:0.8; --rot:-1; top:380vh; right:10vw">#</span>
+  <span class="plus" style="--sp:0.9; top:42vh; left:42vw"></span>
+  <span class="plus" style="--sp:0.7; top:135vh; left:30vw"></span>
+  <span class="plus" style="--sp:0.95; top:280vh; right:30vw"></span>
+</div>
+
+<header class="top">
+  <div class="inner bar">
+    <a class="brand" href="#top" aria-label="Back to top">
+      <span class="mono-mark">JJ</span><span class="brand-name">{{ profile.name }}</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      @for (s of sections(); track s.id) {
+        <a [href]="'#' + s.id" [class.on]="active() === s.id">{{ s.label }}</a>
+      }
+    </nav>
+    <button
+      matIconButton
+      type="button"
+      class="theme-btn"
+      (click)="toggleTheme()"
+      [matTooltip]="theme() === 'dark' ? 'Light mode' : 'Dark mode'"
+      [attr.aria-label]="theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+    >
+      <mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+  </div>
+</header>
+
+<main id="top" class="inner page">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-main">
+    <div class="views" role="radiogroup" aria-label="I'm a">
+      <span class="k">I'm a</span>
+      <mat-button-toggle-group
+        [value]="audienceId()"
+        (change)="setAudience($event.value)"
+        hideSingleSelectionIndicator
+        aria-label="Choose your view"
+      >
+        @for (a of audiences; track a.id) {
+          <mat-button-toggle [value]="a.id" [id]="'view-' + a.id"><mat-icon>{{ a.icon }}</mat-icon>{{ a.label }}</mat-button-toggle>
+        }
+      </mat-button-toggle-group>
+    </div>
+    <p class="status">
+      <span class="pulse" [class.off]="!isWorkingHours()"></span>
+      {{ audienceId() === 'recruiter' ? 'Open to new roles' : 'Available for freelance' }}
+      <span class="sep">·</span>
+      <span class="clock">{{ localTime() }} in Calamba{{ isWorkingHours() ? '' : ', replies by morning' }}</span>
+    </p>
+    <h1>{{ audience().headline }} <span class="muted">{{ audience().headlineMuted }}</span></h1>
+    <p class="intro">{{ audience().intro }}</p>
+    <div class="acts">
+      <a
+        matButton="filled"
+        [href]="primaryHref()"
+        [attr.target]="audience().cta.action === 'quote' || (audience().cta.action === 'call' && !profile.bookingUrl) ? null : '_blank'"
+        rel="noopener"
+        (click)="onPrimary($event)"
+        >{{ audience().cta.label }} <mat-icon iconPositionEnd>{{ audience().cta.icon }}</mat-icon></a
+      >
+      @if (audience().chat; as c) {
+        <a matButton="tonal" [href]="c.url" target="_blank" rel="noopener">{{ c.label }} <mat-icon iconPositionEnd>{{ c.icon }}</mat-icon></a>
+      }
+      <a matButton="outlined" [href]="profile.linkedin" target="_blank" rel="noopener">LinkedIn <mat-icon iconPositionEnd>north_east</mat-icon></a>
+    </div>
+    </div>
+    <figure class="portrait">
+      <button
+        type="button"
+        class="stage"
+        [class.live]="tilting()"
+        [style.--rx.deg]="rx()"
+        [style.--ry.deg]="ry()"
+        [style.--mx.%]="mx()"
+        [style.--my.%]="my()"
+        (pointermove)="onTilt($event)"
+        (pointerleave)="resetTilt()"
+        (click)="nextFact()"
+        [attr.aria-label]="'Photo of Jomer Jorge. Tap for a fact. ' + fact()"
+      >
+        <span class="halo" aria-hidden="true"></span>
+        <span class="shine" aria-hidden="true" style="-webkit-mask: url(jomer.webp) center / contain no-repeat; mask: url(jomer.webp) center / contain no-repeat"></span>
+        <img src="jomer.webp" width="608" height="829" alt="" fetchpriority="high" draggable="false" />
+        <span class="bubble" [class.show]="factShown()" aria-hidden="true">
+          @if (factShown()) {
+            <span class="fact">{{ fact() }}</span>
+          }
+          <span class="count">{{ factIndex() + 1 }}/{{ facts.length }}</span>
+        </span>
+      </button>
+      <figcaption>
+        <span class="k">Jomer “Jomz” Jorge</span>
+        <span class="k tap"><mat-icon>touch_app</mat-icon>{{ factShown() ? 'Tap for more' : 'Tap me' }}</span>
+      </figcaption>
+    </figure>
+    <dl class="stats">
+      @for (s of stats; track s.label) {
+        <div><dt>{{ s.value }}</dt><dd>{{ s.label }}</dd></div>
+      }
+    </dl>
+  </section>
+
+  <!-- Work -->
+  <section id="work" class="sec">
+    <div class="sec-head">
+      <h2>Impact</h2>
+      <mat-chip-listbox
+        aria-label="Filter work"
+        [value]="kind()"
+        (change)="kind.set($event.value ?? 'all')"
+        class="filters"
+      >
+        @for (f of filters; track f.id) {
+          <mat-chip-option [value]="f.id" [selected]="kind() === f.id">{{ f.label }}</mat-chip-option>
+        }
+      </mat-chip-listbox>
+    </div>
+
+    @if (tech()) {
+      <p class="filter-note">
+        Showing work with <b>{{ tech() }}</b>
+        <button matButton type="button" (click)="tech.set(null)"><mat-icon>close</mat-icon>Clear</button>
+      </p>
+    }
+
+    @if (impacts().length) {
+      <mat-accordion class="work" displayMode="flat">
+        @for (i of impacts(); track i.org; let first = $first) {
+          <mat-expansion-panel class="row" [expanded]="first" hideToggle #p>
+            <mat-expansion-panel-header class="row-head" collapsedHeight="auto" expandedHeight="auto">
+              <div class="rh">
+                <span class="when">{{ i.when }}</span>
+                <div class="who">
+                  <span class="org">{{ i.org }}</span>
+                  <span class="role">{{ i.role }}</span>
+                </div>
+                <span class="headline">{{ i.headline }}</span>
+                <mat-icon class="chev" [class.open]="p.expanded">add</mat-icon>
+              </div>
+            </mat-expansion-panel-header>
+
+            <div class="detail">
+              @if (i.gallery?.length) {
+                <div class="gallery" role="list" [attr.aria-label]="i.org + ' screenshots'">
+                  @for (g of i.gallery; track g.src; let gi = $index) {
+                    <button type="button" class="shot" role="listitem" (click)="openViewer(i.gallery, gi)" [attr.aria-label]="'Open screenshot: ' + g.alt">
+                      <img [src]="g.src" [alt]="g.alt" loading="lazy" />
+                      <mat-icon>open_in_full</mat-icon>
+                    </button>
+                  }
+                </div>
+              }
+              <div class="cols">
+                <div>
+                  <span class="k">Challenge</span>
+                  <p>{{ i.challenge }}</p>
+                </div>
+                <div>
+                  <span class="k">{{ i.builtLabel ?? 'What I built' }}</span>
+                  <p>{{ i.built }}</p>
+                </div>
+                <div class="result">
+                  <span class="k">{{ i.resultLabel ?? 'Impact' }}</span>
+                  @if (i.metric) {
+                    <span class="metric">{{ i.metric }}</span>
+                  }
+                  <p>{{ i.result }}</p>
+                </div>
+              </div>
+              <div class="foot">
+                <div class="tags">
+                  @for (t of i.tags; track t) {
+                    <button type="button" class="tag" (click)="pickTech(t)" [class.on]="tech() === t">{{ t }}</button>
+                  }
+                </div>
+                @for (l of i.links ?? []; track l.url) {
+                  <a class="ext" [href]="l.url" target="_blank" rel="noopener">{{ l.label }}<mat-icon>north_east</mat-icon></a>
+                }
+              </div>
+            </div>
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+    } @else {
+      <div class="empty">
+        <p>No work matches that filter yet.</p>
+        <button matButton="tonal" type="button" (click)="clearFilters()">Show all work</button>
+      </div>
+    }
+
+    <div class="clients">
+      <span class="k">Trusted by</span>
+      <ul>
+        @for (c of clients; track c.name) {
+          <li>{{ c.name }}</li>
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Services -->
+  @if (services(); as list) {
+    <section id="services" class="sec">
+      <div class="sec-head">
+        <h2>{{ audienceId() === 'global' ? 'How I can help your team' : 'What I can build for you' }}</h2>
+        <a matButton href="#contact" (click)="onPrimary($event, true)">{{ audience().cta.label }}<mat-icon iconPositionEnd>arrow_forward</mat-icon></a>
+      </div>
+      <div class="services">
+        @for (sv of list; track sv.title) {
+          <div class="svc">
+            <mat-icon>{{ sv.icon }}</mat-icon>
+            <h3>{{ sv.title }}</h3>
+            <p>{{ sv.text }}</p>
+          </div>
+        }
+      </div>
+      @if (audienceId() === 'global') {
+        <p class="overlap"><mat-icon>schedule</mat-icon>Manila is UTC+8: full overlap with Singapore and Perth, mornings with Sydney, and evenings with US Pacific.</p>
+      }
+    </section>
+  }
+
+  <!-- Stack -->
+  <section id="stack" class="sec">
+    <div class="sec-head">
+      <h2>{{ audienceId() === 'recruiter' ? 'Skills' : 'Stack' }}</h2>
+      <p class="hint"><span class="dot"></span>Tap a highlighted skill to see the work that uses it</p>
+    </div>
+    <div class="stack">
+      @for (s of skills; track s.title) {
+        <div class="group">
+          <span class="k">{{ s.title }}</span>
+          <div class="skills">
+            @for (t of s.items; track t) {
+              @if (hasWork(t)) {
+                <button type="button" class="skill live" (click)="pickTech(t)" [class.on]="tech() === t">
+                  <span class="dot"></span>{{ t }}
+                </button>
+              } @else {
+                <span class="skill">{{ t }}</span>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="sec contact">
+    <div class="c-left">
+      <h2>Let's build something.</h2>
+      <p class="muted">Tell me what's slowing your business down. I reply within one working day.</p>
+      <ul class="reach">
+        <li>
+          <span class="k">Email</span><span class="v">{{ profile.email }}</span>
+          <button matIconButton type="button" matTooltip="Copy" aria-label="Copy email" (click)="copy(profile.email, 'Email')"><mat-icon>content_copy</mat-icon></button>
+        </li>
+        <li>
+          <span class="k">Mobile</span><span class="v">{{ profile.mobile }}</span>
+          <button matIconButton type="button" matTooltip="Copy" aria-label="Copy mobile number" (click)="copy(profile.mobile, 'Mobile number')"><mat-icon>content_copy</mat-icon></button>
+        </li>
+        @if (audienceId() !== 'recruiter') {
+          <li>
+            <span class="k">Chat</span>
+            <span class="v chats">
+              <a class="ext" [href]="'viber://chat?number=%2B' + profile.mobileIntl" target="_blank" rel="noopener">Viber<mat-icon>north_east</mat-icon></a>
+              <a class="ext" [href]="'https://wa.me/' + profile.mobileIntl" target="_blank" rel="noopener">WhatsApp<mat-icon>north_east</mat-icon></a>
+            </span>
+          </li>
+        }
+        @if (audienceId() === 'recruiter') {
+          <li>
+            <span class="k">CV</span><a class="v ext" [href]="profile.cv" target="_blank" rel="noopener">Jomer-Jorge-CV.pdf<mat-icon>download</mat-icon></a>
+          </li>
+        }
+        <li>
+          <span class="k">LinkedIn</span><a class="v ext" [href]="profile.linkedin" target="_blank" rel="noopener">Jomer Trillo Jorge<mat-icon>north_east</mat-icon></a>
+        </li>
+      </ul>
+      <p class="edu muted">{{ profile.education }}</p>
+    </div>
+
+    <form class="c-form" [formGroup]="form" (submit)="$event.preventDefault()">
+      <span class="k">{{ audienceId() === 'recruiter' ? 'Reach out' : 'Project inquiry' }}</span>
+      <div class="two">
+        <mat-form-field appearance="outline">
+          <mat-label>Your name</mat-label>
+          <input matInput id="f-name" formControlName="name" autocomplete="name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ audienceId() === 'business' ? 'Business' : 'Company' }}</mat-label>
+          <input matInput id="f-business" formControlName="business" autocomplete="organization" />
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>What do you need?</mat-label>
+        <mat-select id="f-need" formControlName="need">
+          @for (n of needs; track n) {
+            <mat-option [value]="n">{{ n }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Timeline</mat-label>
+        <mat-select id="f-timeline" formControlName="timeline">
+          @for (t of timelines; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tell me about it</mat-label>
+        <textarea matInput id="f-message" formControlName="message" rows="3"></textarea>
+      </mat-form-field>
+
+      <div class="preview" aria-live="polite">
+        <span class="k">Your message</span>
+        <pre>{{ draft() }}</pre>
+      </div>
+      <div class="acts">
+        <a matButton="filled" [href]="mailto()">Send by email <mat-icon iconPositionEnd>send</mat-icon></a>
+        <button matButton="outlined" type="button" (click)="copy(draft(), 'Message')">Copy message</button>
+      </div>
+      <p class="fine muted">Email not opening? Copy the message and send it to {{ profile.email }}.</p>
+    </form>
+  </section>
+
+  <footer class="foot-bar">
+    <span>© 2026 {{ profile.name }}</span><span>{{ profile.location }}</span>
+  </footer>
+</main>
+
+@if (viewer(); as v) {
+  <div class="viewer" role="dialog" aria-modal="true" aria-label="Screenshot viewer" (click)="closeViewer()" (keydown)="onKey($event)" tabindex="-1" #vw>
+    <img [src]="v.items![v.index].src" [alt]="v.items![v.index].alt" (click)="$event.stopPropagation()" />
+    <p class="cap">{{ v.items![v.index].alt }} · {{ v.index + 1 }}/{{ v.items!.length }}</p>
+    <button matIconButton type="button" class="vclose" aria-label="Close" (click)="closeViewer()"><mat-icon>close</mat-icon></button>
+    @if (v.items!.length > 1) {
+      <button matIconButton type="button" class="vprev" aria-label="Previous" (click)="$event.stopPropagation(); stepViewer(-1)"><mat-icon>chevron_left</mat-icon></button>
+      <button matIconButton type="button" class="vnext" aria-label="Next" (click)="$event.stopPropagation(); stepViewer(1)"><mat-icon>chevron_right</mat-icon></button>
+    }
+  </div>
+}
