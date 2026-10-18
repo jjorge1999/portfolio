@@ -1,36 +1,38 @@
 name: Build and publish to GitHub Pages
 
+# Builds the Angular site and publishes it to the gh-pages branch,
+# which GitHub Pages serves at https://<owner>.github.io/<repo>/
+
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm ci
-      - run: npx ng build --base-href /${{ github.event.repository.name }}/
+      - name: Build
+        run: npx ng build --base-href /${{ github.event.repository.name }}/
         env: { NG_CLI_ANALYTICS: 'false' }
-      - run: cp dist/portfolio/browser/index.html dist/portfolio/browser/404.html
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: dist/portfolio/browser }
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
-    steps:
-      - id: d
-        uses: actions/deploy-pages@v4
+      - name: Publish to the gh-pages branch
+        working-directory: dist/portfolio/browser
+        run: |
+          cp index.html 404.html
+          touch .nojekyll
+          git init -q
+          git checkout -q -b gh-pages
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "Publish site from ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
