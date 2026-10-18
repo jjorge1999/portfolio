@@ -62,3 +62,6 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--mat-sys-primary
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* Impact accordion: the detail lines up with the row header instead of Material's default 24px inset. */
+.row .mat-expansion-panel-body { padding: 0 !important; }

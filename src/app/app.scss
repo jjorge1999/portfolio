@@ -291,7 +291,18 @@ mat-form-field { width: 100%; }
 @media (max-width: 600px) {
   .nav { display: none; }
   .page { gap: 88px; padding-block: 48px 40px; }
-  .stats { grid-template-columns: 1fr 1fr; > div:nth-child(3) { padding-left: 0; border-left: 0; } }
+  .sep { display: none; }
+  .clock { flex-basis: 100%; padding-left: 16px; }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+    > div, > div + div { padding: 16px 0; border-left: 0; }
+    > div + div:nth-child(even) { padding-left: 16px; border-left: 1px solid var(--mat-sys-outline-variant); }
+    > div + div:nth-child(odd) { padding-left: 0; padding-right: 12px; }
+    > div:first-child { padding-right: 12px; }
+    > div + div:nth-child(n + 3) { border-top: 1px solid var(--mat-sys-outline-variant); }
+    dt { font-size: 1.6rem; }
+  }
+  .chev { align-self: start; grid-row: 1 / span 1; }
   .stack { grid-template-columns: 1fr; }
   .two { grid-template-columns: 1fr; gap: 0; }
   .c-form { padding: 18px; }
@@ -424,4 +435,17 @@ mat-form-field { width: 100%; }
   .views mat-button-toggle { flex: 1; }
   .views mat-button-toggle mat-icon { display: none; }
   .svc { padding-right: 0; }
+}
+
+@media (max-width: 360px) {
+  .views mat-button-toggle-group { --mat-button-toggle-label-text-size: 13px; }
+  .views .mat-button-toggle-label-content { padding: 0 8px !important; }
+  h1 { font-size: 2.15rem; }
+  .acts a { flex: 1 1 auto; justify-content: center; }
+}
+
+.views .sm { display: none; }
+@media (max-width: 420px) {
+  .views .lg { display: none; }
+  .views .sm { display: inline; }
 }

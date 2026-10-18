@@ -30,6 +30,7 @@ export type AudienceId = 'business' | 'global' | 'recruiter';
 export interface Audience {
   id: AudienceId;
   label: string;
+  short: string;
   icon: string;
   headline: string;
   headlineMuted: string;
@@ -64,6 +65,7 @@ export const AUDIENCES: Audience[] = [
   {
     id: 'business',
     label: 'Business owner',
+    short: 'Business',
     icon: 'storefront',
     headline: 'Software that runs your business,',
     headlineMuted: 'built for Philippine small businesses.',
@@ -77,6 +79,7 @@ export const AUDIENCES: Audience[] = [
   {
     id: 'global',
     label: 'Global client',
+    short: 'Global',
     icon: 'public',
     headline: 'A full-stack engineer for your product,',
     headlineMuted: 'working remotely from Manila (UTC+8).',
@@ -90,6 +93,7 @@ export const AUDIENCES: Audience[] = [
   {
     id: 'recruiter',
     label: 'Recruiter',
+    short: 'Recruiter',
     icon: 'badge',
     headline: 'Angular & Node engineer,',
     headlineMuted: 'eight years in production.',

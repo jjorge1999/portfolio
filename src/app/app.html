@@ -54,7 +54,7 @@
         aria-label="Choose your view"
       >
         @for (a of audiences; track a.id) {
-          <mat-button-toggle [value]="a.id" [id]="'view-' + a.id"><mat-icon>{{ a.icon }}</mat-icon>{{ a.label }}</mat-button-toggle>
+          <mat-button-toggle [value]="a.id" [id]="'view-' + a.id"><mat-icon>{{ a.icon }}</mat-icon><span class="lg">{{ a.label }}</span><span class="sm">{{ a.short }}</span></mat-button-toggle>
         }
       </mat-button-toggle-group>
     </div>
