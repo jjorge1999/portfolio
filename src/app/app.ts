@@ -1,17 +1,10 @@
 import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   AUDIENCES,
   AudienceId,
@@ -19,6 +12,7 @@ import {
   FILTERS,
   IMPACTS,
   Impact,
+  KIND_LABELS,
   Kind,
   NEEDS,
   PROFILE,
@@ -32,21 +26,10 @@ type Theme = 'light' | 'dark';
 
 @Component({
   selector: 'app-root',
-  imports: [
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatChipsModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-  ],
+  imports: [NgTemplateOutlet, ReactiveFormsModule, MatIconModule, MatSnackBarModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  host: { '(document:keydown)': 'onKey($event)' },
 })
 export class App {
   private clipboard = inject(Clipboard);
@@ -61,6 +44,8 @@ export class App {
   readonly needs = NEEDS;
   readonly timelines = TIMELINES;
   readonly audiences = AUDIENCES;
+  readonly kindLabels = KIND_LABELS;
+  readonly year = new Date().getFullYear();
 
   // --- audience view ---------------------------------------------------------
   readonly audienceId = signal<AudienceId>('business');
@@ -70,7 +55,8 @@ export class App {
     return id === 'recruiter' ? null : SERVICES[id];
   });
   readonly sections = computed(() => [
-    { id: 'work', label: 'Work' },
+    { id: 'case-study', label: 'Case study' },
+    { id: 'work', label: 'Track record' },
     ...(this.services() ? [{ id: 'services', label: 'Services' }] : []),
     { id: 'stack', label: this.audienceId() === 'recruiter' ? 'Skills' : 'Stack' },
     { id: 'contact', label: 'Contact' },
@@ -121,6 +107,7 @@ export class App {
     if (a === 'call' && this.profile.bookingUrl) return this.profile.bookingUrl;
     return '#contact';
   });
+  readonly primaryTarget = computed(() => (this.primaryHref() === '#contact' ? null : '_blank'));
 
   // --- gallery viewer ----------------------------------------------------------
   readonly viewer = signal<{ items: Impact['gallery']; index: number } | null>(null);
@@ -143,21 +130,29 @@ export class App {
     if (e.key === 'ArrowLeft') this.stepViewer(-1);
   }
 
-  // --- filtering -------------------------------------------------------------
+  // --- work: featured case study + filterable track record ---------------------
   readonly kind = signal<'all' | Kind>('all');
   readonly tech = signal<string | null>(null);
-  readonly impacts = computed(() => {
+  private readonly ordered = computed(() => {
     const order = this.audience().order;
     const rank = (i: Impact) => {
       const r = order.indexOf(i.org);
       return r === -1 ? order.length + IMPACTS.indexOf(i) : r;
     };
-    return [...IMPACTS].sort((a, b) => rank(a) - rank(b)).filter(
+    return [...IMPACTS].sort((a, b) => rank(a) - rank(b));
+  });
+  /** The first project for the current view gets the full case-study panel. */
+  readonly featured = computed(() => this.ordered()[0]);
+  readonly filtering = computed(() => this.kind() !== 'all' || !!this.tech());
+  readonly impacts = computed(() =>
+    this.ordered().filter(
       (i) =>
+        // The featured project is already shown in full above, unless a filter is narrowing the list.
+        (this.filtering() || i !== this.featured()) &&
         (this.kind() === 'all' || i.kind === this.kind()) &&
         (!this.tech() || i.tags.some((t) => t.toLowerCase().includes(this.tech()!.toLowerCase()))),
-    );
-  });
+    ),
+  );
   readonly usedTags = new Set(IMPACTS.flatMap((i) => i.tags.map((t) => t.toLowerCase())));
 
   hasWork(skill: string) {
@@ -176,24 +171,12 @@ export class App {
     this.tech.set(null);
   }
 
-  // --- interactive portrait --------------------------------------------------
-  readonly facts = [
-    "Hi, I'm Jomz. I turn messy business problems into working software.",
-    '8 years shipping production code, since 2018.',
-    'Angular is home turf. I use it at Infor and in my own products.',
-    'I started as a graphic designer, so I care how things look.',
-    'Based in Calamba, Laguna. Working in BGC a few days a week.',
-    'I build for carinderias, resorts and clinics, not just big companies.',
-  ];
+  // --- profile card: 3D tilt + fun facts ---------------------------------------
   readonly rx = signal(0);
   readonly ry = signal(0);
   readonly mx = signal(50);
   readonly my = signal(40);
   readonly tilting = signal(false);
-  readonly factIndex = signal(0);
-  readonly factShown = signal(false);
-  readonly fact = computed(() => this.facts[this.factIndex()]);
-  private factTimer?: ReturnType<typeof setTimeout>;
 
   onTilt(e: PointerEvent) {
     if (e.pointerType === 'touch' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -201,8 +184,8 @@ export class App {
     const px = (e.clientX - r.left) / r.width;
     const py = (e.clientY - r.top) / r.height;
     this.tilting.set(true);
-    this.ry.set((px - 0.5) * 16);
-    this.rx.set((0.5 - py) * 12);
+    this.ry.set((px - 0.5) * 14);
+    this.rx.set((0.5 - py) * 10);
     this.mx.set(px * 100);
     this.my.set(py * 100);
   }
@@ -215,11 +198,18 @@ export class App {
     this.my.set(40);
   }
 
+  readonly facts = [
+    "Hi, I'm Jomz. I turn messy business problems into working software.",
+    '8 years shipping production code, since 2018.',
+    'Angular is home turf. I use it at Infor and in my own products.',
+    'I started as a graphic designer, so I care how things look.',
+    'Based in Calamba, Laguna. Working in BGC a few days a week.',
+    'I build for carinderias, resorts and clinics, not just big companies.',
+  ];
+  readonly factIndex = signal(0);
+  readonly fact = computed(() => this.facts[this.factIndex()]);
   nextFact() {
-    if (this.factShown()) this.factIndex.set((this.factIndex() + 1) % this.facts.length);
-    this.factShown.set(true);
-    clearTimeout(this.factTimer);
-    this.factTimer = setTimeout(() => this.factShown.set(false), 6000);
+    this.factIndex.set((this.factIndex() + 1) % this.facts.length);
   }
 
   // --- live clock ------------------------------------------------------------
@@ -234,12 +224,12 @@ export class App {
     return h >= 8 && h < 20;
   });
 
-  // --- theme + scroll spy ------------------------------------------------------
-  readonly theme = signal<Theme>('light');
-  readonly active = signal('work');
+  // --- theme + scroll depth + scroll spy ----------------------------------------
+  readonly theme = signal<Theme>('dark');
+  readonly active = signal('case-study');
 
   constructor() {
-    inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-rounded');
+    inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
     const destroy = inject(DestroyRef);
 
     afterNextRender(() => {
@@ -247,12 +237,12 @@ export class App {
       try {
         saved = localStorage.getItem('jj-theme');
       } catch {}
-      const sys: Theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const sys: Theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
       this.applyTheme((saved as Theme) || sys, false);
 
       const tick = setInterval(() => this.now.set(new Date()), 30_000);
 
-      // Scroll depth: write scroll position to a CSS variable once per frame.
+      // Scroll depth: write scroll position to a CSS variable once per frame (drives the parallax layer).
       const root = document.documentElement;
       let raf = 0;
       const onScroll = () => {
@@ -350,6 +340,7 @@ export class App {
     () =>
       `mailto:${this.profile.email}?subject=${encodeURIComponent(this.subject())}&body=${encodeURIComponent(this.draft())}`,
   );
+  readonly whatsapp = computed(() => `https://wa.me/${this.profile.mobileIntl}?text=${encodeURIComponent(this.draft())}`);
 
   copy(value: string, label: string) {
     const ok = this.clipboard.copy(value);

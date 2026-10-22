@@ -23,6 +23,14 @@ export interface Impact {
   /** One real, sourced result number shown above the impact text. Leave empty rather than guess. */
   metric?: string;
   gallery?: { src: string; alt: string }[];
+  /** Three short facts for the case-study panel. Only restate what the text above already says. */
+  highlights?: Highlight[];
+}
+
+export interface Highlight {
+  k: string;
+  v: string;
+  note: string;
 }
 
 export type AudienceId = 'business' | 'global' | 'recruiter';
@@ -40,12 +48,15 @@ export interface Audience {
   cta: { label: string; icon: string; action: 'quote' | 'call' | 'cv' };
   chat?: { label: string; url: string; icon: string };
   inquiryOpener: string;
+  /** Small label above the featured case study (the first org in `order`). */
+  caseLabel: string;
 }
 
 export const PROFILE = {
   name: 'Jomer Jorge',
   nickname: 'Jomz',
   initials: 'JJ',
+  title: 'Full-stack software engineer',
   headline: 'Full-stack engineer who ships systems that change how a business runs.',
   intro:
     "I'm Jomer “Jomz” Jorge. I've spent eight years building software for enterprise ERP, US real-estate SaaS and Philippine small businesses. I start from the business problem, write the code, deploy it, and stay to support it.",
@@ -75,6 +86,7 @@ export const AUDIENCES: Audience[] = [
     cta: { label: 'Get a quote', icon: 'request_quote', action: 'quote' },
     chat: { label: 'Chat on Viber', url: 'viber://chat?number=%2B639195843463', icon: 'chat' },
     inquiryOpener: "I run a business and I'm looking for help with",
+    caseLabel: 'Philippine small business',
   },
   {
     id: 'global',
@@ -89,6 +101,7 @@ export const AUDIENCES: Audience[] = [
     cta: { label: 'Book a call', icon: 'event', action: 'call' },
     chat: { label: 'WhatsApp', url: 'https://wa.me/639195843463', icon: 'chat' },
     inquiryOpener: "I'm looking for a remote engineer to help with",
+    caseLabel: 'Product I built and run',
   },
   {
     id: 'recruiter',
@@ -102,6 +115,7 @@ export const AUDIENCES: Audience[] = [
     order: ['Infor PSSC', 'Placester Inc.', 'Microbitworx Solution'],
     cta: { label: 'Download CV', icon: 'download', action: 'cv' },
     inquiryOpener: "I'm hiring and I'd like to talk to you about",
+    caseLabel: 'Current role',
   },
 ];
 
@@ -122,11 +136,17 @@ export const SERVICES: Record<'business' | 'global', { icon: string; title: stri
 };
 
 export const STATS = [
-  { value: '8 yrs', label: 'Writing production software, since 2018' },
-  { value: '3', label: 'Software companies, local and international' },
-  { value: '2', label: 'Products I founded and build myself' },
-  { value: '4', label: 'Client brands that trust my work' },
+  { value: '8 yrs', label: 'Production code', note: 'Writing production software since 2018' },
+  { value: '3', label: 'Software companies', note: 'Infor, Placester (US) and Microbitworx' },
+  { value: '2', label: 'Products founded', note: 'SwiftStay and Benepisyo, built myself' },
+  { value: '4', label: 'Client brands', note: 'Including Fujifilm and Alpha Laboratory Calamba' },
 ];
+
+export const KIND_LABELS: Record<Kind, string> = {
+  emp: 'Employment',
+  free: 'Client work',
+  prod: 'My product',
+};
 
 export const FILTERS: { id: 'all' | Kind; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -149,6 +169,11 @@ export const IMPACTS: Impact[] = [
       'Customers on released versions stay supported, and I ship alongside analysts and architects across time zones.',
     tags: ['Angular', 'TypeScript', 'Automated tests', 'GitLab'],
     links: [{ label: 'infor.com', url: 'https://www.infor.com' }],
+    highlights: [
+      { k: 'Product', v: 'Multi-tenant', note: 'Global cloud ERP for enterprise customers' },
+      { k: 'Every release', v: 'Tested', note: 'Automated tests, validation and verification' },
+      { k: 'Team', v: 'Across time zones', note: 'Shipping alongside analysts and architects' },
+    ],
   },
   {
     kind: 'emp',
@@ -163,6 +188,11 @@ export const IMPACTS: Impact[] = [
     result: 'A plan change in billing now changes what an agent or brokerage can use, without manual updates.',
     tags: ['NestJS', 'Zuora', 'Java / Spring Boot', 'WordPress API', 'AWS'],
     links: [{ label: 'placester.com', url: 'https://placester.com' }],
+    highlights: [
+      { k: 'Billing', v: 'Zuora', note: 'Subscriptions drive what each agent can use' },
+      { k: 'Plan changes', v: 'Automatic', note: 'No manual updates to feature access' },
+      { k: 'Market', v: 'US', note: 'Real-estate SaaS for agents and brokerages' },
+    ],
   },
   {
     kind: 'emp',
@@ -175,6 +205,11 @@ export const IMPACTS: Impact[] = [
     built: 'A WIP tracking system, a service management system in CodeIgniter, and the Alpha Laboratory website.',
     result: 'Clients went live on their own servers, with staff trained by me and critical issues handled same day.',
     tags: ['PHP', 'CodeIgniter', 'C#', 'MySQL', 'WordPress'],
+    highlights: [
+      { k: 'Critical issues', v: 'Same day', note: 'Handled for every live client' },
+      { k: 'Delivered', v: '3 systems', note: 'WIP tracking, service management, Alpha Laboratory site' },
+      { k: 'Go-live', v: 'On-site', note: 'On client servers, with staff trained by me' },
+    ],
   },
   {
     kind: 'free',
@@ -189,6 +224,11 @@ export const IMPACTS: Impact[] = [
     result:
       'Carinderia and BBQ carry most of the profit. Casual Bisaya ad copy far outperformed generic English posts.',
     tags: ['Data analysis', 'Meta Ads', 'Buffer automation'],
+    highlights: [
+      { k: 'Reviewed', v: '30 days', note: 'Of income and expenses, explained in plain Filipino' },
+      { k: 'Real profit driver', v: 'Carinderia + BBQ', note: 'Not lechon, the biggest seller' },
+      { k: 'Best-performing ads', v: 'Casual Bisaya', note: 'Far outperformed generic English posts' },
+    ],
   },
   {
     kind: 'prod',
@@ -203,6 +243,11 @@ export const IMPACTS: Impact[] = [
     result: 'Owners keep 100% of their nightly rate and see fewer double-bookings across channels.',
     tags: ['Angular', 'Cloudflare', 'E-wallet payments', 'iCal'],
     links: [{ label: 'swiftstay.uk', url: 'https://swiftstay.uk' }],
+    highlights: [
+      { k: 'Owner keeps', v: '100%', note: 'Of the nightly rate, no platform cut' },
+      { k: 'Checkout', v: 'E-wallets', note: 'GCash, Maya, QRPh and GrabPay, no credit card' },
+      { k: 'Calendar sync', v: 'iCal', note: 'With Airbnb and Booking.com, fewer double-bookings' },
+    ],
   },
   {
     kind: 'prod',
@@ -220,6 +265,11 @@ export const IMPACTS: Impact[] = [
     result: "Anyone can see what they're entitled to in a few taps, at no cost.",
     tags: ['Angular', 'Ant Design', 'Cloudflare Workers', 'D1'],
     links: [{ label: 'jjorge1999.github.io/benepisyo', url: 'https://jjorge1999.github.io/benepisyo/' }],
+    highlights: [
+      { k: 'Coverage', v: '1,642', note: 'Cities and municipalities in the Philippines' },
+      { k: 'Cost to users', v: 'Free', note: 'Tagalog-first, with the source behind every benefit' },
+      { k: 'Pilot', v: 'Calamba', note: 'Fully verified first' },
+    ],
   },
 ];
 

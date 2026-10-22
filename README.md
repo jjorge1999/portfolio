@@ -15,5 +15,26 @@ npx ng serve
 
 ## Deploy
 
-Pushing to `main` builds the site and publishes it to GitHub Pages
-(Settings → Pages → Source: **GitHub Actions**).
+The site lives at https://jomerjorge.pages.dev (Cloudflare Pages). The build prerenders the
+page to static HTML, so search engines and link previews see the full content.
+
+Cloudflare Pages settings (Workers & Pages → Create → Pages → Connect to Git):
+
+- Build command: `npx ng build`
+- Build output directory: `dist/portfolio/browser`
+
+Or deploy from your machine:
+
+```bash
+npx ng build
+npx wrangler pages deploy dist/portfolio/browser --project-name jomerjorge
+```
+
+Pushing to `main` also publishes a copy to GitHub Pages; its canonical tag points search
+engines at the Cloudflare URL.
+
+## SEO
+
+- Title, description, social previews and structured data: `src/index.html`
+- `public/robots.txt` and `public/sitemap.xml` (bump `lastmod` when the content changes)
+- If the domain changes, replace `jomerjorge.pages.dev` in those three files.

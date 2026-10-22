@@ -1,5 +1,13 @@
+<ng-template #logo>
+  <svg class="logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <rect width="64" height="64" rx="15" class="logo-bg" />
+    <path d="M28 27v15a9 9 0 0 1-9 9h-1M44 27v15a9 9 0 0 1-9 9h-1" class="logo-j" />
+    <circle cx="28" cy="16" r="4.5" class="logo-dot" /><circle cx="44" cy="16" r="4.5" class="logo-dot" />
+  </svg>
+</ng-template>
+
 <div class="depth" aria-hidden="true">
-  <span class="dots" style="--sp:0.06"></span>
+  <span class="grid-bg" style="--sp:0.06"></span>
   <span class="blob b1" style="--sp:0.12; top:-10vh; left:-12vw"></span>
   <span class="blob b2" style="--sp:0.28; top:70vh; right:-14vw"></span>
   <span class="blob b3" style="--sp:0.2; top:190vh; left:-10vw"></span>
@@ -19,144 +27,264 @@
 </div>
 
 <header class="top">
-  <div class="inner bar">
-    <a class="brand" href="#top" aria-label="Back to top">
-      <span class="mono-mark">JJ</span><span class="brand-name">{{ profile.name }}</span>
-    </a>
+  <div class="wrap bar">
+    <div class="brand-row">
+      <a class="brand" href="#top" aria-label="Back to top">
+        <span class="mark"><ng-container [ngTemplateOutlet]="logo" /></span>
+        <span class="id">
+          <b>{{ profile.name }}</b>
+          <small>{{ profile.title }}</small>
+        </span>
+      </a>
+      <span class="avail">
+        <span class="pulse" [class.off]="!isWorkingHours()"></span>
+        {{ audienceId() === 'recruiter' ? 'Open to new roles' : 'Available for freelance' }}
+      </span>
+    </div>
     <nav class="nav" aria-label="Sections">
       @for (s of sections(); track s.id) {
         <a [href]="'#' + s.id" [class.on]="active() === s.id">{{ s.label }}</a>
       }
     </nav>
-    <button
-      matIconButton
-      type="button"
-      class="theme-btn"
-      (click)="toggleTheme()"
-      [matTooltip]="theme() === 'dark' ? 'Light mode' : 'Dark mode'"
-      [attr.aria-label]="theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-    >
-      <mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
-    </button>
+    <div class="top-acts">
+      <button
+        type="button"
+        class="icon-btn"
+        (click)="toggleTheme()"
+        [title]="theme() === 'dark' ? 'Light mode' : 'Dark mode'"
+        [attr.aria-label]="theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        <mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <a class="btn btn-ghost btn-sm" [href]="primaryHref()" [attr.target]="primaryTarget()" rel="noopener" (click)="onPrimary($event)">
+        {{ audience().cta.label }}<mat-icon>north_east</mat-icon>
+      </a>
+      @if (audience().chat; as c) {
+        <a class="icon-btn" [href]="c.url" target="_blank" rel="noopener" [attr.aria-label]="c.label" [title]="c.label"><mat-icon>chat</mat-icon></a>
+      } @else {
+        <a class="icon-btn" [href]="profile.linkedin" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><mat-icon>work</mat-icon></a>
+      }
+    </div>
   </div>
 </header>
 
-<main id="top" class="inner page">
+<main id="top">
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-main">
-    <div class="views" role="radiogroup" aria-label="I'm a">
-      <span class="k">I'm a</span>
-      <mat-button-toggle-group
-        [value]="audienceId()"
-        (change)="setAudience($event.value)"
-        hideSingleSelectionIndicator
-        aria-label="Choose your view"
-      >
-        @for (a of audiences; track a.id) {
-          <mat-button-toggle [value]="a.id" [id]="'view-' + a.id"><mat-icon>{{ a.icon }}</mat-icon><span class="lg">{{ a.label }}</span><span class="sm">{{ a.short }}</span></mat-button-toggle>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <span class="chip-eyebrow"><span class="dot"></span>{{ profile.title }} · since 2018</span>
+          <h1>{{ audience().headline }} <span class="muted">{{ audience().headlineMuted }}</span></h1>
+          <p class="lead">{{ audience().intro }}</p>
+
+          <div class="lens">
+            <div class="lens-head">
+              <span class="k">I'm a</span>
+              <span class="k accent">{{ audience().label }} view</span>
+            </div>
+            <div class="seg" role="radiogroup" aria-label="Choose your view">
+              @for (a of audiences; track a.id) {
+                <button
+                  type="button"
+                  role="radio"
+                  [id]="'view-' + a.id"
+                  [attr.aria-checked]="audienceId() === a.id"
+                  [class.on]="audienceId() === a.id"
+                  (click)="setAudience(a.id)"
+                >
+                  <mat-icon>{{ a.icon }}</mat-icon><span class="lg">{{ a.label }}</span><span class="sm">{{ a.short }}</span>
+                </button>
+              }
+            </div>
+            <p class="lens-note">
+              <span class="pulse" [class.off]="!isWorkingHours()"></span>
+              {{ audienceId() === 'recruiter' ? 'Open to new roles' : 'Available for freelance' }}
+              <span class="sep">·</span>
+              <span class="clock">{{ localTime() }} in Calamba{{ isWorkingHours() ? '' : ', replies by morning' }}</span>
+            </p>
+          </div>
+
+          <div class="acts">
+            <a class="btn btn-primary" [href]="primaryHref()" [attr.target]="primaryTarget()" rel="noopener" (click)="onPrimary($event)">
+              {{ audience().cta.label }}<mat-icon>{{ audience().cta.icon }}</mat-icon>
+            </a>
+            @if (audience().chat; as c) {
+              <a class="btn btn-secondary" [href]="c.url" target="_blank" rel="noopener"><mat-icon class="good">{{ c.icon }}</mat-icon>{{ c.label }} ({{ profile.mobile }})</a>
+            }
+            <a class="btn btn-secondary" [href]="profile.linkedin" target="_blank" rel="noopener">LinkedIn<mat-icon>north_east</mat-icon></a>
+          </div>
+        </div>
+
+        <aside
+          class="profile"
+          [class.live]="tilting()"
+          [style.--rx.deg]="rx()"
+          [style.--ry.deg]="ry()"
+          [style.--mx.%]="mx()"
+          [style.--my.%]="my()"
+          (pointermove)="onTilt($event)"
+          (pointerleave)="resetTilt()"
+        >
+          <div class="glow" aria-hidden="true"></div>
+          <div class="card profile-card">
+            <span class="shine" aria-hidden="true"></span>
+            <button type="button" class="avatar" (click)="nextFact()" aria-label="Show another fact about Jomz">
+              <span class="frame"><img src="jomer.webp" width="608" height="829" alt="Jomer Jorge, full-stack software engineer" fetchpriority="high" draggable="false" /></span>
+              <span class="badge"><span class="pulse" [class.off]="!isWorkingHours()"></span>{{ isWorkingHours() ? 'Online' : 'Away' }}</span>
+            </button>
+            <p class="p-name">Jomer “Jomz” Jorge</p>
+            <p class="p-title">{{ profile.title }}</p>
+            <span class="loc"><mat-icon>location_on</mat-icon>{{ profile.location }}</span>
+
+            <div class="fact" aria-live="polite">
+              <div class="fact-head">
+                <span class="k">Fact {{ factIndex() + 1 }}/{{ facts.length }}</span>
+                <button type="button" class="link" (click)="nextFact()">Next<mat-icon>arrow_forward</mat-icon></button>
+              </div>
+              <p>{{ fact() }}</p>
+            </div>
+
+            <div class="spec">
+              <div class="cell">
+                <span class="k">Local time</span>
+                <b>{{ localTime() }} · UTC+8</b>
+              </div>
+              <div class="cell">
+                <span class="k">Replies</span>
+                <b class="accent">Within 1 working day</b>
+              </div>
+            </div>
+            <button type="button" class="btn-cmd" (click)="copy(profile.email, 'Email')"><mat-icon>content_copy</mat-icon>Copy {{ profile.email }}</button>
+          </div>
+        </aside>
+      </div>
+
+      <dl class="metrics">
+        @for (s of stats; track s.label) {
+          <div>
+            <dt>{{ s.value }}</dt>
+            <dd><span class="k">{{ s.label }}</span><span class="note">{{ s.note }}</span></dd>
+          </div>
         }
-      </mat-button-toggle-group>
+      </dl>
     </div>
-    <p class="status">
-      <span class="pulse" [class.off]="!isWorkingHours()"></span>
-      {{ audienceId() === 'recruiter' ? 'Open to new roles' : 'Available for freelance' }}
-      <span class="sep">·</span>
-      <span class="clock">{{ localTime() }} in Calamba{{ isWorkingHours() ? '' : ', replies by morning' }}</span>
-    </p>
-    <h1>{{ audience().headline }} <span class="muted">{{ audience().headlineMuted }}</span></h1>
-    <p class="intro">{{ audience().intro }}</p>
-    <div class="acts">
-      <a
-        matButton="filled"
-        [href]="primaryHref()"
-        [attr.target]="audience().cta.action === 'quote' || (audience().cta.action === 'call' && !profile.bookingUrl) ? null : '_blank'"
-        rel="noopener"
-        (click)="onPrimary($event)"
-        >{{ audience().cta.label }} <mat-icon iconPositionEnd>{{ audience().cta.icon }}</mat-icon></a
-      >
-      @if (audience().chat; as c) {
-        <a matButton="tonal" [href]="c.url" target="_blank" rel="noopener">{{ c.label }} <mat-icon iconPositionEnd>{{ c.icon }}</mat-icon></a>
-      }
-      <a matButton="outlined" [href]="profile.linkedin" target="_blank" rel="noopener">LinkedIn <mat-icon iconPositionEnd>north_east</mat-icon></a>
-    </div>
-    </div>
-    <figure class="portrait">
-      <button
-        type="button"
-        class="stage"
-        [class.live]="tilting()"
-        [style.--rx.deg]="rx()"
-        [style.--ry.deg]="ry()"
-        [style.--mx.%]="mx()"
-        [style.--my.%]="my()"
-        (pointermove)="onTilt($event)"
-        (pointerleave)="resetTilt()"
-        (click)="nextFact()"
-        [attr.aria-label]="'Photo of Jomer Jorge. Tap for a fact. ' + fact()"
-      >
-        <span class="halo" aria-hidden="true"></span>
-        <span class="shine" aria-hidden="true" style="-webkit-mask: url(jomer.webp) center / contain no-repeat; mask: url(jomer.webp) center / contain no-repeat"></span>
-        <img src="jomer.webp" width="608" height="829" alt="" fetchpriority="high" draggable="false" />
-        <span class="bubble" [class.show]="factShown()" aria-hidden="true">
-          @if (factShown()) {
-            <span class="fact">{{ fact() }}</span>
-          }
-          <span class="count">{{ factIndex() + 1 }}/{{ facts.length }}</span>
-        </span>
-      </button>
-      <figcaption>
-        <span class="k">Jomer “Jomz” Jorge</span>
-        <span class="k tap"><mat-icon>touch_app</mat-icon>{{ factShown() ? 'Tap for more' : 'Tap me' }}</span>
-      </figcaption>
-    </figure>
-    <dl class="stats">
-      @for (s of stats; track s.label) {
-        <div><dt>{{ s.value }}</dt><dd>{{ s.label }}</dd></div>
-      }
-    </dl>
   </section>
 
-  <!-- Work -->
-  <section id="work" class="sec">
-    <div class="sec-head">
-      <h2>Impact</h2>
-      <mat-chip-listbox
-        aria-label="Filter work"
-        [value]="kind()"
-        (change)="kind.set($event.value ?? 'all')"
-        class="filters"
-      >
-        @for (f of filters; track f.id) {
-          <mat-chip-option [value]="f.id" [selected]="kind() === f.id">{{ f.label }}</mat-chip-option>
-        }
-      </mat-chip-listbox>
-    </div>
+  <!-- Featured case study -->
+  @if (featured(); as f) {
+    <section id="case-study" class="sec">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <span class="eyebrow"><span class="dot"></span>{{ audience().caseLabel }}</span>
+            <h2>Featured case study</h2>
+          </div>
+          <span class="meta">{{ f.role }} · {{ f.when }}</span>
+        </div>
 
-    @if (tech()) {
-      <p class="filter-note">
-        Showing work with <b>{{ tech() }}</b>
-        <button matButton type="button" (click)="tech.set(null)"><mat-icon>close</mat-icon>Clear</button>
-      </p>
-    }
-
-    @if (impacts().length) {
-      <mat-accordion class="work" displayMode="flat">
-        @for (i of impacts(); track i.org; let first = $first) {
-          <mat-expansion-panel class="row" [expanded]="first" hideToggle #p>
-            <mat-expansion-panel-header class="row-head" collapsedHeight="auto" expandedHeight="auto">
-              <div class="rh">
-                <span class="when">{{ i.when }}</span>
-                <div class="who">
-                  <span class="org">{{ i.org }}</span>
-                  <span class="role">{{ i.role }}</span>
-                </div>
-                <span class="headline">{{ i.headline }}</span>
-                <mat-icon class="chev" [class.open]="p.expanded">add</mat-icon>
+        <article class="card case">
+          <div class="case-top">
+            <div class="case-main">
+              <span class="file">Case file // 01 · {{ kindLabels[f.kind] }}</span>
+              <h3>{{ f.org }}</h3>
+              <p class="case-lead">{{ f.headline }}</p>
+              <div class="chips">
+                @for (t of f.tags; track t) {
+                  <button type="button" class="chip" (click)="pickTech(t)" [class.on]="tech() === t">{{ t }}</button>
+                }
               </div>
-            </mat-expansion-panel-header>
+              @if (f.links?.length) {
+                <div class="links">
+                  @for (l of f.links; track l.url) {
+                    <a class="ext" [href]="l.url" target="_blank" rel="noopener">{{ l.label }}<mat-icon>north_east</mat-icon></a>
+                  }
+                </div>
+              }
+            </div>
+            @if (f.highlights?.length) {
+              <div class="case-metrics">
+                @for (h of f.highlights; track h.k; let hi = $index) {
+                  <div class="cell" [class.wide]="hi === 2">
+                    <span class="k">{{ h.k }}</span>
+                    <b [class.good]="hi === 0" [class.accent]="hi === 1">{{ h.v }}</b>
+                    <span class="note">{{ h.note }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
 
-            <div class="detail">
+          @if (f.gallery?.length) {
+            <div class="gallery case-gallery" role="list" [attr.aria-label]="f.org + ' screenshots'">
+              @for (g of f.gallery; track g.src; let gi = $index) {
+                <button type="button" class="shot" role="listitem" (click)="openViewer(f.gallery, gi)" [attr.aria-label]="'Open screenshot: ' + g.alt">
+                  <img [src]="g.src" [alt]="g.alt" loading="lazy" />
+                  <mat-icon>open_in_full</mat-icon>
+                </button>
+              }
+            </div>
+          }
+
+          <div class="case-split">
+            <div class="friction">
+              <h4><mat-icon>error_outline</mat-icon>The challenge</h4>
+              <p>{{ f.challenge }}</p>
+            </div>
+            <div class="resolve">
+              <h4><mat-icon>verified</mat-icon>{{ f.builtLabel ?? 'What I built' }}</h4>
+              <p>{{ f.built }}</p>
+              <h4 class="res"><mat-icon>{{ f.resultIcon ?? 'trending_up' }}</mat-icon>{{ f.resultLabel ?? 'Impact' }}</h4>
+              @if (f.metric) {
+                <span class="metric">{{ f.metric }}</span>
+              }
+              <p>{{ f.result }}</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  }
+
+  <!-- Track record -->
+  <section id="work" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow"><span class="dot"></span>Systems &amp; deployments</span>
+          <h2>Track record</h2>
+        </div>
+        <div class="seg seg-sm" role="radiogroup" aria-label="Filter work">
+          @for (fl of filters; track fl.id) {
+            <button type="button" role="radio" [attr.aria-checked]="kind() === fl.id" [class.on]="kind() === fl.id" (click)="kind.set(fl.id)">{{ fl.label }}</button>
+          }
+        </div>
+      </div>
+
+      @if (tech()) {
+        <p class="filter-note">
+          Showing work with <b>{{ tech() }}</b>
+          <button type="button" class="btn-cmd inline" (click)="tech.set(null)"><mat-icon>close</mat-icon>Clear</button>
+        </p>
+      }
+
+      @if (impacts().length) {
+        <div class="grid3">
+          @for (i of impacts(); track i.org) {
+            <article class="card proj">
+              <header class="p-head">
+                <span class="k" [class.accent]="i.kind !== 'emp'">{{ kindLabels[i.kind] }}</span>
+                <span class="k" [class.good]="i.when === 'Live' || i.when.includes('now')">{{ i.when }}</span>
+              </header>
+              <h3>{{ i.org }}</h3>
+              <p class="role">{{ i.role }}</p>
+              <p class="p-lead">{{ i.headline }}</p>
+              @if (i.metric) {
+                <span class="metric">{{ i.metric }}</span>
+              }
+              @if (i.highlights?.[0]; as h) {
+                <p class="p-key"><b>{{ h.v }}</b><span>{{ h.k }}: {{ h.note }}</span></p>
+              }
               @if (i.gallery?.length) {
                 <div class="gallery" role="list" [attr.aria-label]="i.org + ' screenshots'">
                   @for (g of i.gallery; track g.src; let gi = $index) {
@@ -167,24 +295,12 @@
                   }
                 </div>
               }
-              <div class="cols">
-                <div>
-                  <span class="k">Challenge</span>
-                  <p>{{ i.challenge }}</p>
-                </div>
-                <div>
-                  <span class="k">{{ i.builtLabel ?? 'What I built' }}</span>
-                  <p>{{ i.built }}</p>
-                </div>
-                <div class="result">
-                  <span class="k">{{ i.resultLabel ?? 'Impact' }}</span>
-                  @if (i.metric) {
-                    <span class="metric">{{ i.metric }}</span>
-                  }
-                  <p>{{ i.result }}</p>
-                </div>
-              </div>
-              <div class="foot">
+              <dl class="story">
+                <div><dt>Challenge</dt><dd>{{ i.challenge }}</dd></div>
+                <div><dt>{{ i.builtLabel ?? 'What I built' }}</dt><dd>{{ i.built }}</dd></div>
+                <div class="res"><dt>{{ i.resultLabel ?? 'Impact' }}</dt><dd>{{ i.result }}</dd></div>
+              </dl>
+              <footer class="p-foot">
                 <div class="tags">
                   @for (t of i.tags; track t) {
                     <button type="button" class="tag" (click)="pickTech(t)" [class.on]="tech() === t">{{ t }}</button>
@@ -193,169 +309,205 @@
                 @for (l of i.links ?? []; track l.url) {
                   <a class="ext" [href]="l.url" target="_blank" rel="noopener">{{ l.label }}<mat-icon>north_east</mat-icon></a>
                 }
-              </div>
-            </div>
-          </mat-expansion-panel>
-        }
-      </mat-accordion>
-    } @else {
-      <div class="empty">
-        <p>No work matches that filter yet.</p>
-        <button matButton="tonal" type="button" (click)="clearFilters()">Show all work</button>
-      </div>
-    }
+              </footer>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="card empty">
+          <p>No other work matches that filter yet.</p>
+          <button type="button" class="btn btn-secondary" (click)="clearFilters()">Show all work</button>
+        </div>
+      }
 
-    <div class="clients">
-      <span class="k">Trusted by</span>
-      <ul>
-        @for (c of clients; track c.name) {
-          <li>{{ c.name }}</li>
-        }
-      </ul>
+      <div class="clients">
+        <span class="k">Trusted by</span>
+        <ul>
+          @for (c of clients; track c.name) {
+            <li>{{ c.name }}</li>
+          }
+        </ul>
+      </div>
     </div>
   </section>
 
   <!-- Services -->
   @if (services(); as list) {
     <section id="services" class="sec">
-      <div class="sec-head">
-        <h2>{{ audienceId() === 'global' ? 'How I can help your team' : 'What I can build for you' }}</h2>
-        <a matButton href="#contact" (click)="onPrimary($event, true)">{{ audience().cta.label }}<mat-icon iconPositionEnd>arrow_forward</mat-icon></a>
-      </div>
-      <div class="services">
-        @for (sv of list; track sv.title) {
-          <div class="svc">
-            <mat-icon>{{ sv.icon }}</mat-icon>
-            <h3>{{ sv.title }}</h3>
-            <p>{{ sv.text }}</p>
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <span class="eyebrow"><span class="dot"></span>{{ audienceId() === 'global' ? 'For product teams' : 'For business owners' }}</span>
+            <h2>{{ audienceId() === 'global' ? 'How I can help your team' : 'What I can build for you' }}</h2>
           </div>
+          <a class="btn btn-ghost btn-sm" href="#contact" (click)="onPrimary($event, true)">{{ audience().cta.label }}<mat-icon>arrow_forward</mat-icon></a>
+        </div>
+        <div class="services" [class.five]="list.length === 5">
+          @for (sv of list; track sv.title) {
+            <div class="card svc">
+              <span class="ic"><mat-icon>{{ sv.icon }}</mat-icon></span>
+              <h3>{{ sv.title }}</h3>
+              <p>{{ sv.text }}</p>
+            </div>
+          }
+        </div>
+        @if (audienceId() === 'global') {
+          <p class="overlap"><mat-icon>schedule</mat-icon>Manila is UTC+8: full overlap with Singapore and Perth, mornings with Sydney, and evenings with US Pacific.</p>
         }
       </div>
-      @if (audienceId() === 'global') {
-        <p class="overlap"><mat-icon>schedule</mat-icon>Manila is UTC+8: full overlap with Singapore and Perth, mornings with Sydney, and evenings with US Pacific.</p>
-      }
     </section>
   }
 
   <!-- Stack -->
   <section id="stack" class="sec">
-    <div class="sec-head">
-      <h2>{{ audienceId() === 'recruiter' ? 'Skills' : 'Stack' }}</h2>
-      <p class="hint"><span class="dot"></span>Tap a highlighted skill to see the work that uses it</p>
-    </div>
-    <div class="stack">
-      @for (s of skills; track s.title) {
-        <div class="group">
-          <span class="k">{{ s.title }}</span>
-          <div class="skills">
-            @for (t of s.items; track t) {
-              @if (hasWork(t)) {
-                <button type="button" class="skill live" (click)="pickTech(t)" [class.on]="tech() === t">
-                  <span class="dot"></span>{{ t }}
-                </button>
-              } @else {
-                <span class="skill">{{ t }}</span>
-              }
-            }
-          </div>
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow"><span class="dot"></span>Tooling</span>
+          <h2>{{ audienceId() === 'recruiter' ? 'Skills' : 'Production-proven stack' }}</h2>
         </div>
-      }
+        <p class="meta"><span class="dot live"></span>Tap a highlighted skill to see the work that uses it</p>
+      </div>
+      <div class="stack">
+        @for (s of skills; track s.title; let si = $index) {
+          <div class="card group">
+            <span class="k">0{{ si + 1 }} // {{ s.title }}</span>
+            <div class="skills">
+              @for (t of s.items; track t) {
+                @if (hasWork(t)) {
+                  <button type="button" class="skill live" (click)="pickTech(t)" [class.on]="tech() === t"><span class="dot"></span>{{ t }}</button>
+                } @else {
+                  <span class="skill">{{ t }}</span>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </section>
 
   <!-- Contact -->
-  <section id="contact" class="sec contact">
-    <div class="c-left">
-      <h2>Let's build something.</h2>
-      <p class="muted">Tell me what's slowing your business down. I reply within one working day.</p>
-      <ul class="reach">
-        <li>
-          <span class="k">Email</span><span class="v">{{ profile.email }}</span>
-          <button matIconButton type="button" matTooltip="Copy" aria-label="Copy email" (click)="copy(profile.email, 'Email')"><mat-icon>content_copy</mat-icon></button>
-        </li>
-        <li>
-          <span class="k">Mobile</span><span class="v">{{ profile.mobile }}</span>
-          <button matIconButton type="button" matTooltip="Copy" aria-label="Copy mobile number" (click)="copy(profile.mobile, 'Mobile number')"><mat-icon>content_copy</mat-icon></button>
-        </li>
-        @if (audienceId() !== 'recruiter') {
-          <li>
-            <span class="k">Chat</span>
-            <span class="v chats">
-              <a class="ext" [href]="'viber://chat?number=%2B' + profile.mobileIntl" target="_blank" rel="noopener">Viber<mat-icon>north_east</mat-icon></a>
-              <a class="ext" [href]="'https://wa.me/' + profile.mobileIntl" target="_blank" rel="noopener">WhatsApp<mat-icon>north_east</mat-icon></a>
-            </span>
-          </li>
-        }
-        @if (audienceId() === 'recruiter') {
-          <li>
-            <span class="k">CV</span><a class="v ext" [href]="profile.cv" target="_blank" rel="noopener">Jomer-Jorge-CV.pdf<mat-icon>download</mat-icon></a>
-          </li>
-        }
-        <li>
-          <span class="k">LinkedIn</span><a class="v ext" [href]="profile.linkedin" target="_blank" rel="noopener">Jomer Trillo Jorge<mat-icon>north_east</mat-icon></a>
-        </li>
-      </ul>
-      <p class="edu muted">{{ profile.education }}</p>
+  <section id="contact" class="sec last">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow"><span class="dot"></span>Direct line</span>
+          <h2>Let's build something.</h2>
+          <p class="sub">Tell me what's slowing your business down. I reply within one working day.</p>
+        </div>
+      </div>
+
+      <div class="contact">
+        <form class="card c-form" [formGroup]="form" (submit)="$event.preventDefault()">
+          <span class="k">{{ audienceId() === 'recruiter' ? 'Reach out' : 'Project inquiry' }}</span>
+          <div class="two">
+            <label class="field">
+              <span class="k">Your name</span>
+              <input id="f-name" formControlName="name" autocomplete="name" />
+            </label>
+            <label class="field">
+              <span class="k">{{ audienceId() === 'business' ? 'Business' : 'Company' }}</span>
+              <input id="f-business" formControlName="business" autocomplete="organization" />
+            </label>
+          </div>
+          <label class="field">
+            <span class="k">What do you need?</span>
+            <select id="f-need" formControlName="need">
+              @for (n of needs; track n) {
+                <option [value]="n">{{ n }}</option>
+              }
+            </select>
+          </label>
+          <fieldset class="field">
+            <legend class="k">Timeline</legend>
+            <div class="radios">
+              @for (t of timelines; track t) {
+                <label class="radio" [class.on]="form.controls.timeline.value === t">
+                  <input type="radio" formControlName="timeline" [value]="t" />
+                  <span>{{ t }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+          <label class="field">
+            <span class="k">Tell me about it</span>
+            <textarea id="f-message" formControlName="message" rows="4"></textarea>
+          </label>
+        </form>
+
+        <div class="c-side">
+          <div class="card term">
+            <div class="term-head">
+              <span class="k"><span class="dot good"></span>your_message.txt</span>
+              <span class="k accent">Live preview</span>
+            </div>
+            <pre aria-live="polite">{{ draft() }}</pre>
+            <div class="term-acts">
+              <button type="button" class="btn btn-secondary" (click)="copy(draft(), 'Message')"><mat-icon>content_copy</mat-icon>Copy</button>
+              <a class="btn btn-good" [href]="whatsapp()" target="_blank" rel="noopener"><mat-icon>send</mat-icon>WhatsApp</a>
+              <a class="btn btn-primary" [href]="mailto()"><mat-icon>mail</mat-icon>Send by email</a>
+            </div>
+            <p class="fine">Email not opening? Copy the message and send it to {{ profile.email }}.</p>
+          </div>
+
+          <ul class="card reach">
+            <li>
+              <span class="k">Email</span><span class="v">{{ profile.email }}</span>
+              <button type="button" class="icon-btn sm" aria-label="Copy email" title="Copy" (click)="copy(profile.email, 'Email')"><mat-icon>content_copy</mat-icon></button>
+            </li>
+            <li>
+              <span class="k">Mobile</span><span class="v">{{ profile.mobile }}</span>
+              <button type="button" class="icon-btn sm" aria-label="Copy mobile number" title="Copy" (click)="copy(profile.mobile, 'Mobile number')"><mat-icon>content_copy</mat-icon></button>
+            </li>
+            @if (audienceId() !== 'recruiter') {
+              <li>
+                <span class="k">Chat</span>
+                <span class="v chats">
+                  <a class="ext" [href]="'viber://chat?number=%2B' + profile.mobileIntl" target="_blank" rel="noopener">Viber<mat-icon>north_east</mat-icon></a>
+                  <a class="ext" [href]="'https://wa.me/' + profile.mobileIntl" target="_blank" rel="noopener">WhatsApp<mat-icon>north_east</mat-icon></a>
+                </span>
+              </li>
+            }
+            @if (audienceId() === 'recruiter') {
+              <li>
+                <span class="k">CV</span><a class="v ext" [href]="profile.cv" target="_blank" rel="noopener">Jomer-Jorge-CV.pdf<mat-icon>download</mat-icon></a>
+              </li>
+            }
+            <li>
+              <span class="k">LinkedIn</span><a class="v ext" [href]="profile.linkedin" target="_blank" rel="noopener">Jomer Trillo Jorge<mat-icon>north_east</mat-icon></a>
+            </li>
+            <li class="edu">
+              <span class="k">Education</span><span class="v">{{ profile.education }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-
-    <form class="c-form" [formGroup]="form" (submit)="$event.preventDefault()">
-      <span class="k">{{ audienceId() === 'recruiter' ? 'Reach out' : 'Project inquiry' }}</span>
-      <div class="two">
-        <mat-form-field appearance="outline">
-          <mat-label>Your name</mat-label>
-          <input matInput id="f-name" formControlName="name" autocomplete="name" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ audienceId() === 'business' ? 'Business' : 'Company' }}</mat-label>
-          <input matInput id="f-business" formControlName="business" autocomplete="organization" />
-        </mat-form-field>
-      </div>
-      <mat-form-field appearance="outline">
-        <mat-label>What do you need?</mat-label>
-        <mat-select id="f-need" formControlName="need">
-          @for (n of needs; track n) {
-            <mat-option [value]="n">{{ n }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Timeline</mat-label>
-        <mat-select id="f-timeline" formControlName="timeline">
-          @for (t of timelines; track t) {
-            <mat-option [value]="t">{{ t }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Tell me about it</mat-label>
-        <textarea matInput id="f-message" formControlName="message" rows="3"></textarea>
-      </mat-form-field>
-
-      <div class="preview" aria-live="polite">
-        <span class="k">Your message</span>
-        <pre>{{ draft() }}</pre>
-      </div>
-      <div class="acts">
-        <a matButton="filled" [href]="mailto()">Send by email <mat-icon iconPositionEnd>send</mat-icon></a>
-        <button matButton="outlined" type="button" (click)="copy(draft(), 'Message')">Copy message</button>
-      </div>
-      <p class="fine muted">Email not opening? Copy the message and send it to {{ profile.email }}.</p>
-    </form>
   </section>
-
-  <footer class="foot-bar">
-    <span>© 2026 {{ profile.name }}</span><span>{{ profile.location }}</span>
-  </footer>
 </main>
 
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-id">
+      <span class="mark sm"><ng-container [ngTemplateOutlet]="logo" /></span>
+      <span><b>Jomer “Jomz” Jorge</b> · {{ profile.title }}</span>
+    </div>
+    <div class="foot-meta">
+      <span>{{ profile.location }} (UTC+8)</span>
+      <span>© {{ year }} {{ profile.name }}</span>
+    </div>
+  </div>
+</footer>
+
 @if (viewer(); as v) {
-  <div class="viewer" role="dialog" aria-modal="true" aria-label="Screenshot viewer" (click)="closeViewer()" (keydown)="onKey($event)" tabindex="-1" #vw>
+  <div class="viewer" role="dialog" aria-modal="true" aria-label="Screenshot viewer" (click)="closeViewer()" tabindex="-1">
     <img [src]="v.items![v.index].src" [alt]="v.items![v.index].alt" (click)="$event.stopPropagation()" />
     <p class="cap">{{ v.items![v.index].alt }} · {{ v.index + 1 }}/{{ v.items!.length }}</p>
-    <button matIconButton type="button" class="vclose" aria-label="Close" (click)="closeViewer()"><mat-icon>close</mat-icon></button>
+    <button type="button" class="icon-btn vclose" aria-label="Close" (click)="closeViewer()"><mat-icon>close</mat-icon></button>
     @if (v.items!.length > 1) {
-      <button matIconButton type="button" class="vprev" aria-label="Previous" (click)="$event.stopPropagation(); stepViewer(-1)"><mat-icon>chevron_left</mat-icon></button>
-      <button matIconButton type="button" class="vnext" aria-label="Next" (click)="$event.stopPropagation(); stepViewer(1)"><mat-icon>chevron_right</mat-icon></button>
+      <button type="button" class="icon-btn vprev" aria-label="Previous" (click)="$event.stopPropagation(); stepViewer(-1)"><mat-icon>chevron_left</mat-icon></button>
+      <button type="button" class="icon-btn vnext" aria-label="Next" (click)="$event.stopPropagation(); stepViewer(1)"><mat-icon>chevron_right</mat-icon></button>
     }
   </div>
 }
