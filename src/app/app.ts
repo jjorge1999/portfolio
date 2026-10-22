@@ -178,19 +178,32 @@ export class App {
   readonly my = signal(40);
   readonly tilting = signal(false);
 
+  private tiltRaf = 0;
+  private reducedMotion?: MediaQueryList;
+
+  /** Pointer moves are coalesced to one update per frame, and nothing runs for touch or reduced motion. */
   onTilt(e: PointerEvent) {
-    if (e.pointerType === 'touch' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    this.tilting.set(true);
-    this.ry.set((px - 0.5) * 14);
-    this.rx.set((0.5 - py) * 10);
-    this.mx.set(px * 100);
-    this.my.set(py * 100);
+    this.reducedMotion ??= matchMedia('(prefers-reduced-motion: reduce)');
+    if (e.pointerType === 'touch' || this.reducedMotion.matches) return;
+    const el = e.currentTarget as HTMLElement;
+    const { clientX, clientY } = e;
+    if (this.tiltRaf) return;
+    this.tiltRaf = requestAnimationFrame(() => {
+      this.tiltRaf = 0;
+      const r = el.getBoundingClientRect();
+      const px = (clientX - r.left) / r.width;
+      const py = (clientY - r.top) / r.height;
+      this.tilting.set(true);
+      this.ry.set((px - 0.5) * 14);
+      this.rx.set((0.5 - py) * 10);
+      this.mx.set(px * 100);
+      this.my.set(py * 100);
+    });
   }
 
   resetTilt() {
+    cancelAnimationFrame(this.tiltRaf);
+    this.tiltRaf = 0;
     this.tilting.set(false);
     this.rx.set(0);
     this.ry.set(0);
@@ -220,14 +233,13 @@ export class App {
   }
 
   // --- live clock ------------------------------------------------------------
+  // Formatters are built once and reused on every tick.
+  private static readonly TIME_FMT = new Intl.DateTimeFormat('en-PH', { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Manila' });
+  private static readonly HOUR_FMT = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Asia/Manila' });
   private now = signal(new Date());
-  readonly localTime = computed(() =>
-    new Intl.DateTimeFormat('en-PH', { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Manila' }).format(this.now()),
-  );
+  readonly localTime = computed(() => App.TIME_FMT.format(this.now()));
   readonly isWorkingHours = computed(() => {
-    const h = Number(
-      new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Asia/Manila' }).format(this.now()),
-    );
+    const h = Number(App.HOUR_FMT.format(this.now()));
     return h >= 8 && h < 20;
   });
 
@@ -249,19 +261,26 @@ export class App {
 
       const tick = setInterval(() => this.now.set(new Date()), 30_000);
 
-      // Scroll depth: write scroll position to a CSS variable once per frame (drives the parallax layer).
-      const root = document.documentElement;
-      let raf = 0;
-      const onScroll = () => {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          root.style.setProperty('--sy', String(Math.round(window.scrollY)));
+      // Parallax: browsers with CSS scroll timelines animate it in CSS (see .depth in app.scss), so no listener at all.
+      // Otherwise write the scroll position to --sy once per frame, on the parallax layer only (not :root),
+      // so a scroll restyles those few shapes and not the whole page.
+      const depth = document.querySelector<HTMLElement>('.depth');
+      if (depth && !CSS.supports('animation-timeline: scroll()')) {
+        let raf = 0;
+        const onScroll = () => {
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            depth.style.setProperty('--sy', String(Math.round(window.scrollY)));
+          });
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        destroy.onDestroy(() => {
+          window.removeEventListener('scroll', onScroll);
+          cancelAnimationFrame(raf);
         });
-      };
-      onScroll();
-      window.addEventListener('scroll', onScroll, { passive: true });
-      destroy.onDestroy(() => window.removeEventListener('scroll', onScroll));
+      }
 
       this.io = new IntersectionObserver(
         (entries) => entries.forEach((e) => e.isIntersecting && this.active.set(e.target.id)),
@@ -280,7 +299,10 @@ export class App {
 
       destroy.onDestroy(() => {
         clearInterval(tick);
+        clearTimeout(this.factTimer);
+        cancelAnimationFrame(this.tiltRaf);
         this.io?.disconnect();
+        this.io = undefined;
       });
     });
   }
@@ -310,7 +332,8 @@ export class App {
   }
 
   private motion(): ScrollBehavior {
-    return matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    this.reducedMotion ??= matchMedia('(prefers-reduced-motion: reduce)');
+    return this.reducedMotion.matches ? 'auto' : 'smooth';
   }
 
   // --- inquiry form ------------------------------------------------------------

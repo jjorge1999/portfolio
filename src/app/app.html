@@ -75,8 +75,11 @@
       <div class="hero-grid">
         <div class="hero-main">
           <span class="chip-eyebrow"><span class="dot"></span>{{ profile.title }} · since 2018</span>
-          <h1>{{ audience().headline }} <span class="muted">{{ audience().headlineMuted }}</span></h1>
-          <p class="lead">{{ audience().intro }}</p>
+          <!-- Keyed on the view so the headline and intro are re-created, and fade in again, when the view changes. -->
+          @for (a of [audience()]; track a.id) {
+            <h1>{{ a.headline }} <span class="muted">{{ a.headlineMuted }}</span></h1>
+            <p class="lead">{{ a.intro }}</p>
+          }
 
           <div class="lens">
             <div class="lens-head">
@@ -178,6 +181,8 @@
           <span class="meta">{{ f.role }}{{ f.start ? " · " + f.start : "" }}</span>
         </div>
 
+        <!-- Keyed on the project so the panel is re-created, and fades in, when the view changes. -->
+        @for (key of [f.org]; track key) {
         <article class="card case">
           <div class="case-top">
             <div class="case-main">
@@ -237,6 +242,7 @@
             </div>
           </div>
         </article>
+        }
       </div>
     </section>
   }

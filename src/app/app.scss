@@ -26,10 +26,9 @@ mat-icon { font-size: 18px; width: 18px; height: 18px; flex: none; }
 .sep { opacity: 0.5; }
 
 .card {
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
   border: 1px solid var(--hairline);
   border-radius: 12px;
-  backdrop-filter: blur(6px);
 }
 
 /* ---- buttons ---- */
@@ -203,12 +202,12 @@ h1 .muted { color: var(--text-2); font-weight: 600; }
   filter:
     drop-shadow(0 0 1px var(--rim))
     drop-shadow(0 0 18px light-dark(rgba(37, 99, 235, 0.12), rgba(96, 165, 250, 0.28)))
-    drop-shadow(calc(var(--ry) * -0.8) 20px 28px rgba(0, 0, 0, 0.3))
+    drop-shadow(0 20px 28px rgba(0, 0, 0, 0.3))
     brightness(1.04) contrast(1.04);
-  transition: transform 0.5s cubic-bezier(.2,.7,.2,1), filter 0.5s, scale 0.15s;
+  transition: transform 0.5s cubic-bezier(.2,.7,.2,1), scale 0.15s;
 }
 .stage:active .figure { scale: 0.985; }
-.profile.live .figure, .profile.live .halo { transition: transform 0.08s linear, filter 0.08s linear, scale 0.15s; }
+.profile.live .figure, .profile.live .halo { transition: transform 0.08s linear, scale 0.15s; }
 .shine {
   position: absolute; z-index: 2; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
   background: radial-gradient(240px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.22), transparent 60%);
@@ -218,7 +217,7 @@ h1 .muted { color: var(--text-2); font-weight: 600; }
 .tag-chip {
   position: absolute; z-index: 3; bottom: 12px; display: inline-flex; align-items: center; gap: 6px;
   padding: 5px 10px; border-radius: 6px; pointer-events: none;
-  background: color-mix(in srgb, var(--canvas) 82%, transparent); backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--canvas) 90%, transparent);
   border: 1px solid var(--hairline-strong);
   font: 600 10px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--text);
   mat-icon { font-size: 14px; width: 14px; height: 14px; color: var(--accent-text); }
@@ -494,9 +493,19 @@ h2 { font: 700 clamp(1.75rem, 3.2vw, 2.25rem)/1.2 var(--font-display); letter-sp
   position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
   > span {
     position: absolute; display: block; will-change: transform;
+    /* Fallback path: app.ts writes --sy from a scroll listener, only in browsers without scroll timelines. */
     transform: translate3d(0, calc(var(--sy, 0) * -1px * var(--sp)), 0)
       rotate(calc(var(--sy, 0) * 0.04deg * var(--rot, 0)));
   }
+}
+/* Preferred path: the page's own scroll drives the drift, on the compositor, with no JS or scroll listener.
+   6000px is about the page's scroll length, so each piece still moves at roughly --sp px per px scrolled. */
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(0, calc(-6000px * var(--sp)), 0) rotate(calc(240deg * var(--rot, 0))); }
+}
+@supports (animation-timeline: scroll()) {
+  .depth > span { animation: drift linear both; animation-timeline: scroll(root block); }
 }
 /* blueprint grid, faded out away from the hero */
 .grid-bg {
@@ -533,12 +542,42 @@ h2 { font: 700 clamp(1.75rem, 3.2vw, 2.25rem)/1.2 var(--font-display); letter-sp
     linear-gradient(var(--hairline-strong), var(--hairline-strong)) center / 100% 1px no-repeat;
 }
 
+/* ---- motion: subtle fades ----
+   CSS only: no JS, listeners or timers. Only opacity and translate animate, so it stays on the GPU.
+   Content is fully visible in the prerendered HTML and for anyone with reduced motion turned on. */
+@keyframes fade-up { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: no-preference) {
-  .figure { animation: rise 0.7s cubic-bezier(.2,.7,.2,1) both; }
+  /* Hero: short stagger on load. The headline and intro are re-created on a view switch, so they fade again. */
+  .hero-main > *, .profile, .metrics > div { animation: fade-up 0.6s cubic-bezier(.2,.7,.2,1) both; }
+  .hero-main > :nth-child(2) { animation-delay: 50ms; }
+  .hero-main > :nth-child(3) { animation-delay: 100ms; }
+  .hero-main > :nth-child(4) { animation-delay: 150ms; }
+  .hero-main > :nth-child(n + 5) { animation-delay: 200ms; }
+  .profile { animation-delay: 120ms; animation-duration: 0.8s; }
+  .metrics > div { animation-delay: 250ms; }
+  .metrics > div:nth-child(2) { animation-delay: 300ms; }
+  .metrics > div:nth-child(3) { animation-delay: 350ms; }
+  .metrics > div:nth-child(4) { animation-delay: 400ms; }
+
+  /* Sections: each block fades up as it scrolls into view (scroll-driven, no observers).
+     Browsers without support skip it and show the content as normal. */
+  @supports (animation-timeline: view()) {
+    .sec > .wrap > * {
+      animation: fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+
+  /* Content that appears after a view or filter change fades in instead of popping. */
+  .case > *, .proj, .svc { animation: fade-in 0.45s ease both; }
+  .proj:nth-child(2), .svc:nth-child(2) { animation-delay: 40ms; }
+  .proj:nth-child(3), .svc:nth-child(3) { animation-delay: 80ms; }
+  .proj:nth-child(n + 4), .svc:nth-child(n + 4) { animation-delay: 120ms; }
 }
-@keyframes rise { from { translate: 0 10px; opacity: 0; } to { translate: 0 0; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .depth > span { transform: none; }
+  .depth > span { transform: none; animation: none; }
   .figure, .halo, .bubble { transition: none; animation: none; }
 }
 
