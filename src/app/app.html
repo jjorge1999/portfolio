@@ -126,34 +126,29 @@
           (pointermove)="onTilt($event)"
           (pointerleave)="resetTilt()"
         >
-          <div class="glow" aria-hidden="true"></div>
-          <div class="card profile-card">
-            <span class="shine" aria-hidden="true"></span>
-            <button type="button" class="avatar" (click)="nextFact()" aria-label="Show another fact about Jomz">
-              <span class="frame"><img src="jomer.webp" width="608" height="829" alt="Jomer Jorge, full-stack software engineer" fetchpriority="high" draggable="false" /></span>
-              <span class="badge"><span class="pulse" [class.off]="!isWorkingHours()"></span>{{ isWorkingHours() ? 'Online' : 'Away' }}</span>
-            </button>
-            <p class="p-name">Jomer “Jomz” Jorge</p>
-            <p class="p-title">{{ profile.title }}</p>
-            <span class="loc"><mat-icon>location_on</mat-icon>{{ profile.location }}</span>
+          <button type="button" class="stage" (click)="nextFact()" [attr.aria-label]="'Photo of Jomer Jorge. Tap for a fact. ' + fact()">
+            <span class="halo" aria-hidden="true"></span>
+            <img class="figure" src="jomer.webp" width="608" height="829" alt="Jomer Jorge, full-stack software engineer" fetchpriority="high" draggable="false" />
+            <span class="shine" aria-hidden="true" style="-webkit-mask: url(jomer.webp) center bottom / contain no-repeat; mask: url(jomer.webp) center bottom / contain no-repeat"></span>
+            <span class="tag-chip tap"><mat-icon>touch_app</mat-icon>{{ factShown() ? 'Tap for more' : 'Tap for a fact' }}</span>
+            <span class="tag-chip badge"><span class="pulse" [class.off]="!isWorkingHours()"></span>{{ isWorkingHours() ? 'Online' : 'Away' }}</span>
+            <span class="bubble" [class.show]="factShown()" aria-hidden="true">
+              <span class="k">Fact {{ factIndex() + 1 }}/{{ facts.length }}</span>
+              @if (factShown()) {
+                <span class="fact-text">{{ fact() }}</span>
+              }
+            </span>
+          </button>
 
-            <div class="fact" aria-live="polite">
-              <div class="fact-head">
-                <span class="k">Fact {{ factIndex() + 1 }}/{{ facts.length }}</span>
-                <button type="button" class="link" (click)="nextFact()">Next<mat-icon>arrow_forward</mat-icon></button>
-              </div>
-              <p>{{ fact() }}</p>
+          <div class="strip">
+            <div class="who">
+              <b>Jomer “Jomz” Jorge</b>
+              <span class="k">{{ profile.title }}</span>
             </div>
-
-            <div class="spec">
-              <div class="cell">
-                <span class="k">Local time</span>
-                <b>{{ localTime() }} · UTC+8</b>
-              </div>
-              <div class="cell">
-                <span class="k">Replies</span>
-                <b class="accent">Within 1 working day</b>
-              </div>
+            <div class="strip-meta">
+              <span><mat-icon>location_on</mat-icon>{{ profile.location }}</span>
+              <span class="clock"><mat-icon>schedule</mat-icon>{{ localTime() }} · UTC+8</span>
+              <span class="accent"><mat-icon>bolt</mat-icon>Replies within 1 working day</span>
             </div>
             <button type="button" class="btn-cmd" (click)="copy(profile.email, 'Email')"><mat-icon>content_copy</mat-icon>Copy {{ profile.email }}</button>
           </div>

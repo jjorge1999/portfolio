@@ -207,9 +207,16 @@ export class App {
     'I build for carinderias, resorts and clinics, not just big companies.',
   ];
   readonly factIndex = signal(0);
+  readonly factShown = signal(false);
   readonly fact = computed(() => this.facts[this.factIndex()]);
+  private factTimer?: ReturnType<typeof setTimeout>;
+
+  /** First tap shows the current fact; later taps step through them. The bubble hides itself so the photo stays clear. */
   nextFact() {
-    this.factIndex.set((this.factIndex() + 1) % this.facts.length);
+    if (this.factShown()) this.factIndex.set((this.factIndex() + 1) % this.facts.length);
+    this.factShown.set(true);
+    clearTimeout(this.factTimer);
+    this.factTimer = setTimeout(() => this.factShown.set(false), 6000);
   }
 
   // --- live clock ------------------------------------------------------------
