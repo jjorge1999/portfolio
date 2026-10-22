@@ -15,26 +15,23 @@ npx ng serve
 
 ## Deploy
 
-The site lives at https://jomerjorge.pages.dev (Cloudflare Pages). The build prerenders the
-page to static HTML, so search engines and link previews see the full content.
+The build prerenders the page to static HTML, so search engines and link previews see the full content.
+Both environments serve the same build output (`dist/portfolio/browser`).
 
-Cloudflare Pages settings (Workers & Pages → Create → Pages → Connect to Git):
+| Environment | URL | Cloudflare | Command |
+|---|---|---|---|
+| Production | https://jomerjorge.com | Worker `jomerjorge-prod` ([wrangler.prod.jsonc](wrangler.prod.jsonc)) | `npm run deploy:prod` |
+| Staging | https://jomerjorge.pages.dev | Pages project `jomerjorge` | `npm run deploy:staging` |
 
-- Build command: `npx ng build`
-- Build output directory: `dist/portfolio/browser`
+Production is a Worker with static assets because a Worker custom domain gets its DNS record and
+certificate created automatically. Deploy to staging first, check it, then deploy production.
 
-Or deploy from your machine:
-
-```bash
-npx ng build
-npx wrangler pages deploy dist/portfolio/browser --project-name jomerjorge
-```
-
-Pushing to `main` also publishes a copy to GitHub Pages; its canonical tag points search
-engines at the Cloudflare URL.
+Only production is indexed. [public/_headers](public/_headers) sends `X-Robots-Tag: noindex` on every
+`*.pages.dev` address, and pushing to `main` also publishes a GitHub Pages mirror that the workflow
+marks `noindex`.
 
 ## SEO
 
 - Title, description, social previews and structured data: `src/index.html`
 - `public/robots.txt` and `public/sitemap.xml` (bump `lastmod` when the content changes)
-- If the domain changes, replace `jomerjorge.pages.dev` in those three files.
+- If the domain changes, replace `jomerjorge.com` in those three files.

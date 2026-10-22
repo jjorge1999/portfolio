@@ -29,6 +29,9 @@ jobs:
       - name: Publish to the gh-pages branch
         working-directory: dist/portfolio/browser
         run: |
+          # This copy is a mirror; only https://jomerjorge.com should be indexed.
+          sed -i 's|<meta name="robots" content="[^"]*">|<meta name="robots" content="noindex">|' index.html
+          grep -q 'content="noindex"' index.html
           cp index.html 404.html
           touch .nojekyll
           git init -q

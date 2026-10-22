@@ -1,0 +1,24 @@
+# Cloudflare Pages response headers.
+
+# Only https://jomerjorge.com should be indexed. Every *.pages.dev address (the staging project,
+# preview deployments, and the production project's own pages.dev subdomain) tells crawlers to skip it,
+# so search engines never see duplicate copies of the site.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+
+# The un-prerendered app shell; never meant to be a landing page.
+/index.csr.html
+  X-Robots-Tag: noindex
+
+# Hashed build files never change, so browsers can keep them for a year.
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+/*.css
+  Cache-Control: public, max-age=31536000, immutable

@@ -1,0 +1,18 @@
+// Production: https://jomerjorge.com, served as a Cloudflare Worker with static assets.
+// The custom domain route makes Cloudflare create the DNS record and certificate automatically.
+// Staging stays on Cloudflare Pages (project "jomerjorge", https://jomerjorge.pages.dev).
+// Deploy with: npm run deploy:prod
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "jomerjorge-prod",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist/portfolio/browser",
+    // Unknown paths return 404.html with a real 404 status, not a copy of the home page.
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "jomerjorge.com", "custom_domain": true }],
+  // No *.workers.dev copy or preview URLs: only jomerjorge.com serves production.
+  "workers_dev": false,
+  "preview_urls": false
+}
