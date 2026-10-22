@@ -201,9 +201,9 @@ export class App {
   readonly facts = [
     "Hi, I'm Jomz. I turn messy business problems into working software.",
     '8 years shipping production code, since 2018.',
-    'Angular is home turf. I use it at Infor and in my own products.',
+    'Angular is home turf: enterprise ERP, US SaaS and my own products.',
     'I started as a graphic designer, so I care how things look.',
-    'Based in Calamba, Laguna. Working in BGC a few days a week.',
+    'Based in Calamba, Laguna, and happy to meet in BGC, Taguig.',
     'I build for carinderias, resorts and clinics, not just big companies.',
   ];
   readonly factIndex = signal(0);

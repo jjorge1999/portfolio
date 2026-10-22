@@ -10,7 +10,8 @@ export interface Impact {
   icon: string;
   org: string;
   role: string;
-  when: string;
+  /** Start year only. End dates are left out on purpose, so overlapping work isn't visible. */
+  start?: string;
   headline: string;
   challenge: string;
   built: string;
@@ -111,11 +112,11 @@ export const AUDIENCES: Audience[] = [
     headline: 'Angular & Node engineer,',
     headlineMuted: 'eight years in production.',
     intro:
-      "I'm Jomer “Jomz” Jorge, a software engineer at Infor building cloud ERP in Angular. Before that I built microservices in NestJS and Java for Placester, a US real-estate SaaS. BS Information Technology, STI College Calamba.",
+      "I'm Jomer “Jomz” Jorge, an Angular and Node engineer with enterprise cloud ERP experience at Infor and NestJS and Java microservices for Placester, a US real-estate SaaS. BS Information Technology, STI College Calamba.",
     order: ['Infor PSSC', 'Placester Inc.', 'Microbitworx Solution'],
     cta: { label: 'Download CV', icon: 'download', action: 'cv' },
     inquiryOpener: "I'm hiring and I'd like to talk to you about",
-    caseLabel: 'Current role',
+    caseLabel: 'Enterprise experience',
   },
 ];
 
@@ -143,14 +144,14 @@ export const STATS = [
 ];
 
 export const KIND_LABELS: Record<Kind, string> = {
-  emp: 'Employment',
+  emp: 'Industry experience',
   free: 'Client work',
   prod: 'My product',
 };
 
 export const FILTERS: { id: 'all' | Kind; label: string }[] = [
   { id: 'all', label: 'All' },
-  { id: 'emp', label: 'Employment' },
+  { id: 'emp', label: 'Industry' },
   { id: 'free', label: 'Freelance & clients' },
   { id: 'prod', label: 'My products' },
 ];
@@ -161,18 +162,18 @@ export const IMPACTS: Impact[] = [
     icon: 'corporate_fare',
     org: 'Infor PSSC',
     role: 'Software Engineer · Cloud ERP',
-    when: '2022 – now',
-    headline: 'Keeps a global, multi-tenant ERP reliable for enterprise customers',
+    start: '2022',
+    headline: 'Shipped reliable releases of a global, multi-tenant cloud ERP',
     challenge: 'Every release reaches many customers at once, so a regression hits everyone.',
     built: 'Angular features with automated tests, plus validation and verification before each release.',
     result:
-      'Customers on released versions stay supported, and I ship alongside analysts and architects across time zones.',
+      'Customers on released versions stayed supported, with work shipped alongside analysts and architects across time zones.',
     tags: ['Angular', 'TypeScript', 'Automated tests', 'GitLab'],
     links: [{ label: 'infor.com', url: 'https://www.infor.com' }],
     highlights: [
       { k: 'Product', v: 'Multi-tenant', note: 'Global cloud ERP for enterprise customers' },
       { k: 'Every release', v: 'Tested', note: 'Automated tests, validation and verification' },
-      { k: 'Team', v: 'Across time zones', note: 'Shipping alongside analysts and architects' },
+      { k: 'Team', v: 'Across time zones', note: 'Delivered with analysts and architects' },
     ],
   },
   {
@@ -180,7 +181,7 @@ export const IMPACTS: Impact[] = [
     icon: 'key',
     org: 'Placester Inc.',
     role: 'Software Engineer · US real-estate SaaS',
-    when: '2020 – 2021',
+    start: '2020',
     headline: 'Built the service that decides what every paying agent can use',
     challenge: 'Billing, feature access and client WordPress sites lived in separate systems.',
     built:
@@ -199,7 +200,7 @@ export const IMPACTS: Impact[] = [
     icon: 'precision_manufacturing',
     org: 'Microbitworx Solution',
     role: 'Full-stack Engineer · Laguna',
-    when: '2018 – 2020',
+    start: '2018',
     headline: 'Gave a manufacturer live visibility of work in progress',
     challenge: 'Local clients needed custom systems built, deployed and supported end to end.',
     built: 'A WIP tracking system, a service management system in CodeIgniter, and the Alpha Laboratory website.',
@@ -216,7 +217,7 @@ export const IMPACTS: Impact[] = [
     icon: 'restaurant',
     org: "Thamara's Lechon & Carinderia",
     role: 'Client · Agusan del Sur',
-    when: '2026',
+    start: '2026',
     headline: 'Showed the owners where their profit really comes from',
     challenge: 'Lechon brought in the most sales, so it looked like the star of the business.',
     built:
@@ -235,7 +236,6 @@ export const IMPACTS: Impact[] = [
     icon: 'cottage',
     org: 'SwiftStay',
     role: 'Founder · Rental marketplace',
-    when: 'Live',
     headline: 'Lets transient-house owners take bookings with no credit card required',
     challenge: 'Most Filipino guests pay by e-wallet, and big platforms take a cut of every night.',
     built:
@@ -254,7 +254,6 @@ export const IMPACTS: Impact[] = [
     icon: 'volunteer_activism',
     org: 'Benepisyo',
     role: 'Free civic app · Calamba pilot',
-    when: 'In progress',
     headline: 'Helps everyday Filipinos find the government benefits they already qualify for',
     challenge: 'Seniors, PWDs and solo parents miss national and LGU benefits because the information is scattered.',
     builtLabel: "What I'm building",

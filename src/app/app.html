@@ -38,7 +38,7 @@
       </a>
       <span class="avail">
         <span class="pulse" [class.off]="!isWorkingHours()"></span>
-        {{ audienceId() === 'recruiter' ? 'Open to new roles' : 'Available for freelance' }}
+        {{ audienceId() === 'recruiter' ? 'Open to opportunities' : 'Available for freelance' }}
       </span>
     </div>
     <nav class="nav" aria-label="Sections">
@@ -99,7 +99,7 @@
             </div>
             <p class="lens-note">
               <span class="pulse" [class.off]="!isWorkingHours()"></span>
-              {{ audienceId() === 'recruiter' ? 'Open to new roles' : 'Available for freelance' }}
+              {{ audienceId() === 'recruiter' ? 'Open to opportunities' : 'Available for freelance' }}
               <span class="sep">·</span>
               <span class="clock">{{ localTime() }} in Calamba{{ isWorkingHours() ? '' : ', replies by morning' }}</span>
             </p>
@@ -180,7 +180,7 @@
             <span class="eyebrow"><span class="dot"></span>{{ audience().caseLabel }}</span>
             <h2>Featured case study</h2>
           </div>
-          <span class="meta">{{ f.role }} · {{ f.when }}</span>
+          <span class="meta">{{ f.role }}{{ f.start ? " · " + f.start : "" }}</span>
         </div>
 
         <article class="card case">
@@ -274,7 +274,9 @@
             <article class="card proj">
               <header class="p-head">
                 <span class="k" [class.accent]="i.kind !== 'emp'">{{ kindLabels[i.kind] }}</span>
-                <span class="k" [class.good]="i.when === 'Live' || i.when.includes('now')">{{ i.when }}</span>
+                @if (i.start) {
+                  <span class="k">{{ i.start }}</span>
+                }
               </header>
               <h3>{{ i.org }}</h3>
               <p class="role">{{ i.role }}</p>
