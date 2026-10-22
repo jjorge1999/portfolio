@@ -334,6 +334,36 @@
     </div>
   </section>
 
+  <!-- Live apps on jomerjorge.com subdomains -->
+  <section id="apps" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow"><span class="dot"></span>Live on jomerjorge.com</span>
+          <h2>More apps I've built</h2>
+        </div>
+        <p class="meta"><span class="dot good"></span>{{ apps.length }} live web apps</p>
+      </div>
+      <ul class="apps">
+        @for (a of apps; track a.url) {
+          <li>
+            <a class="card app" [href]="a.url" target="_blank" rel="noopener">
+              <span class="app-top">
+                <span class="ic"><mat-icon>{{ a.icon }}</mat-icon></span>
+                <span class="k">{{ a.category }}</span>
+              </span>
+              <h3>{{ a.name }}</h3>
+              @if (a.text) {
+                <p>{{ a.text }}</p>
+              }
+              <span class="ext">{{ a.host }}<mat-icon>north_east</mat-icon></span>
+            </a>
+          </li>
+        }
+      </ul>
+    </div>
+  </section>
+
   <!-- Services -->
   @if (services(); as list) {
     <section id="services" class="sec">

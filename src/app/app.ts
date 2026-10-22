@@ -8,6 +8,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   AUDIENCES,
   AudienceId,
+  APPS,
   CLIENTS,
   FILTERS,
   IMPACTS,
@@ -40,6 +41,7 @@ export class App {
   readonly stats = STATS;
   readonly filters = FILTERS;
   readonly clients = CLIENTS;
+  readonly apps = APPS.map((a) => ({ ...a, host: a.url.replace('https://', '') }));
   readonly skills = SKILLS;
   readonly needs = NEEDS;
   readonly timelines = TIMELINES;
@@ -57,6 +59,7 @@ export class App {
   readonly sections = computed(() => [
     { id: 'case-study', label: 'Case study' },
     { id: 'work', label: 'Track record' },
+    { id: 'apps', label: 'Apps' },
     ...(this.services() ? [{ id: 'services', label: 'Services' }] : []),
     { id: 'stack', label: this.audienceId() === 'recruiter' ? 'Skills' : 'Stack' },
     { id: 'contact', label: 'Contact' },

@@ -293,6 +293,21 @@ export const CLIENTS = [
   { initial: 'G', name: 'The Grey Rental House Nasugbu' },
 ];
 
+/**
+ * Live web apps on jomerjorge.com subdomains (served by infra/subdomains).
+ * Text comes from each app's own title and description; keep it in sync with the JSON-LD in src/index.html.
+ */
+export const APPS: { name: string; url: string; icon: string; category: string; text?: string }[] = [
+  { name: 'AgriLink', url: 'https://agrilink.jomerjorge.com', icon: 'agriculture', category: 'Business', text: 'B2B agri supply platform.' },
+  { name: 'DoctorQ', url: 'https://doctorq.jomerjorge.com', icon: 'local_hospital', category: 'Health', text: 'Check the live queue number for your doctor before you leave the house.' },
+  { name: 'JJM Inventory', url: 'https://jjm-inventory.jomerjorge.com', icon: 'inventory_2', category: 'Business' },
+  { name: 'LearnWithMe', url: 'https://learnwithmethamara.jomerjorge.com', icon: 'school', category: 'Education' },
+  { name: 'MikroVoucher', url: 'https://jjmwifi.jomerjorge.com', icon: 'wifi', category: 'Business', text: 'Generate, customize and manage MikroTik hotspot WiFi vouchers for your clients.' },
+  { name: 'PhotoBooth', url: 'https://photobooth.jomerjorge.com', icon: 'photo_camera', category: 'Media', text: 'Photo booth kiosk: capture, print and share your photos.' },
+  { name: 'FileTransfer Free', url: 'https://free-file-transfer.jomerjorge.com', icon: 'cloud_upload', category: 'Utility', text: 'Upload files, get a share link and let anyone download. No account required.' },
+  { name: 'MetadataFixer', url: 'https://metadatafixer.jomerjorge.com', icon: 'photo_library', category: 'Utility', text: 'Restore dates, GPS location and EXIF data to Google Takeout photos.' },
+];
+
 export const SKILLS = [
   { icon: 'web', title: 'Front end', items: ['Angular', 'TypeScript', 'JavaScript', 'HTML / CSS', 'jQuery', 'Ant Design'] },
   {

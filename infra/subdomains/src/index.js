@@ -21,13 +21,15 @@ export default {
     const upstream = new URL(url.pathname + url.search, `https://${origin}`);
     const response = await fetch(new Request(upstream, request), { redirect: 'manual' });
 
-    // Keep visitors on the subdomain if the app redirects to its own pages.dev address.
     const location = response.headers.get('location');
-    if (location && location.includes(origin)) {
-      const headers = new Headers(response.headers);
-      headers.set('location', location.replace(`https://${origin}`, `https://${url.hostname}`));
-      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
-    }
-    return response;
+    const isHtml = response.ok && (response.headers.get('content-type') || '').includes('text/html');
+    if (!isHtml && !location?.includes(origin)) return response;
+
+    const headers = new Headers(response.headers);
+    // Keep visitors on the subdomain if the app redirects to its own pages.dev address.
+    if (location) headers.set('location', location.replace(`https://${origin}`, `https://${url.hostname}`));
+    // Tell search engines the subdomain address is the main one, not the pages.dev copy.
+    if (isHtml) headers.set('link', `<https://${url.hostname}${url.pathname}>; rel="canonical"`);
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
   },
 };
