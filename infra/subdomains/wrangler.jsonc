@@ -1,0 +1,20 @@
+// Router for project subdomains of jomerjorge.com (Cloudflare Pages apps).
+// Deploy from this folder: npx wrangler deploy
+// To add an app: add its host to ORIGINS in src/index.js and a matching route below.
+{
+  "name": "jomerjorge-subdomains",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "agrilink.jomerjorge.com", "custom_domain": true },
+    { "pattern": "doctorq.jomerjorge.com", "custom_domain": true },
+    { "pattern": "jjm-inventory.jomerjorge.com", "custom_domain": true },
+    { "pattern": "learnwithmethamara.jomerjorge.com", "custom_domain": true },
+    { "pattern": "jjmwifi.jomerjorge.com", "custom_domain": true },
+    { "pattern": "photobooth.jomerjorge.com", "custom_domain": true },
+    { "pattern": "free-file-transfer.jomerjorge.com", "custom_domain": true },
+    { "pattern": "metadatafixer.jomerjorge.com", "custom_domain": true }
+  ]
+}
