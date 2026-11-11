@@ -45,3 +45,6 @@ Thumbs.db
 
 # Wrangler (Cloudflare)
 .wrangler/
+
+# Generated from src/app/portfolio.data.ts by scripts/gen-llms.mts
+/public/llms.txt
