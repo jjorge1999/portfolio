@@ -8,6 +8,15 @@ const PRIVATE = [data.PROFILE.mobile, data.PROFILE.mobileIntl, data.PROFILE.vibe
 test('llms.txt starts with the name and a summary line', () => {
   const txt = buildLlmsTxt(data, 2030);
   assert.match(txt, /^# Jomer Jorge\n\n> /);
+  const quote = txt.split('\n').find((l) => l.startsWith('> '));
+  assert.ok(quote?.includes(data.PROFILE.summary));
+});
+
+test('llms.txt does not double the punctuation after a headline', () => {
+  const impacts = [{ ...data.IMPACTS[0], headline: 'Why?' }, ...data.IMPACTS.slice(1)];
+  const txt = buildLlmsTxt({ ...data, IMPACTS: impacts } as typeof data, 2030);
+  assert.ok(txt.includes('Why?'));
+  assert.ok(!txt.includes('Why?.'));
 });
 
 test('llms.txt lists public contact details', () => {
