@@ -71,6 +71,14 @@ export const PROFILE = {
   cv: 'Jomer-Jorge-CV.pdf',
   location: 'Calamba, Laguna · BGC, Taguig',
   education: 'BS Information Technology, STI College Calamba',
+  // Used by the generated llms.txt and JSON-LD (see seo.ts), not shown on the page.
+  fullName: 'Jomer Trillo Jorge',
+  photo: 'jomer.webp',
+  school: 'STI College Calamba',
+  address: { locality: 'Calamba', region: 'Laguna', country: 'PH' },
+  site: 'https://jomerjorge.com',
+  github: 'https://github.com/jjorge1999',
+  languages: ['English', 'Filipino'],
 };
 
 export const AUDIENCES: Audience[] = [
@@ -295,7 +303,7 @@ export const CLIENTS = [
 
 /**
  * Live web apps on jomerjorge.com subdomains (served by infra/subdomains).
- * Text comes from each app's own title and description; keep it in sync with the JSON-LD in src/index.html.
+ * Text comes from each app's own title and description. The JSON-LD and llms.txt are generated from this list (see seo.ts).
  */
 export const APPS: { name: string; url: string; icon: string; category: string; text?: string }[] = [
   { name: 'AgriLink', url: 'https://agrilink.jomerjorge.com', icon: 'agriculture', category: 'Business', text: 'B2B agri supply platform.' },
