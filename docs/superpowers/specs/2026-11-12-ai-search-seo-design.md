@@ -46,6 +46,8 @@ Add the facts the generators need but the site doesn't hold yet, to `PROFILE`:
 - `github: 'https://github.com/jjorge1999'`
 - `languages: ['English', 'Filipino']`
 - `site: 'https://jomerjorge.com'`
+- `fullName`, `photo`, `school` and `address`: moved verbatim from the hand-written JSON-LD in `src/index.html`
+  (`Jomer Trillo Jorge`, `jomer.webp`, `STI College Calamba`, Calamba / Laguna / PH), so they keep a single source.
 
 Update the doc comment on `APPS`: instead of "keep it in sync with the JSON-LD in src/index.html", say that the
 JSON-LD and `llms.txt` are generated from this file.
@@ -140,7 +142,7 @@ The existing `public/**` asset glob in `angular.json` copies it to the build out
   where `data` is built from the constants `App` already imports from `./portfolio.data`.
   The prerendered `index.html` therefore contains the JSON-LD as static HTML, and the browser does not
   add it twice.
-- Add `<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">` to `src/index.html`.
+- Add `<link rel="alternate" type="text/plain" href="llms.txt" …>` (relative, like the other head links, because the GitHub Pages mirror uses a different base href) to `src/index.html`.
 
 ### 5. `public/robots.txt`
 
@@ -164,7 +166,8 @@ Google-Extended and Applebot-Extended.
 
 ## Testing
 
-- `src/app/seo.spec.ts`:
+- `scripts/seo.test.mts`, run with Node's built-in `node --test` (the repo has no unit-test runner configured:
+  no `test` target in `angular.json` and vitest is not installed, so this keeps the no-new-dependencies rule):
   - `buildLlmsTxt()` contains the name, email, every APPS url and every IMPACTS org; contains **no** mobile number
     (`PROFILE.mobile`, `PROFILE.mobileIntl`) and no `undefined`.
   - `buildJsonLd()` round-trips through `JSON.stringify`/`JSON.parse`; `#apps` has `APPS.length` items;
