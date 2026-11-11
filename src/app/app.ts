@@ -1,5 +1,5 @@
-import { Component, DestroyRef, afterNextRender, computed, inject, signal } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { Component, DestroyRef, PLATFORM_ID, afterNextRender, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, NgTemplateOutlet, isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -22,6 +22,8 @@ import {
   STATS,
   TIMELINES,
 } from './portfolio.data';
+import * as portfolio from './portfolio.data';
+import { buildJsonLd } from './seo';
 
 type Theme = 'light' | 'dark';
 
@@ -253,6 +255,16 @@ export class App {
   constructor() {
     inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
     const destroy = inject(DestroyRef);
+
+    // Structured data comes from portfolio.data.ts (see seo.ts). It is written into the prerendered HTML only,
+    // so the browser never adds a second copy. `<` is escaped so no text can close the script tag early.
+    if (isPlatformServer(inject(PLATFORM_ID))) {
+      const doc = inject(DOCUMENT);
+      const ld = doc.createElement('script');
+      ld.type = 'application/ld+json';
+      ld.textContent = JSON.stringify(buildJsonLd(portfolio)).replace(/</g, '\\u003c');
+      doc.head.appendChild(ld);
+    }
 
     afterNextRender(() => {
       let saved: string | null = null;
