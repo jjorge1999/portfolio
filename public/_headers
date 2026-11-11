@@ -22,3 +22,7 @@ https://:version.:project.pages.dev/*
   Cache-Control: public, max-age=31536000, immutable
 /*.css
   Cache-Control: public, max-age=31536000, immutable
+
+# llms.txt contains non-ASCII punctuation, so state the charset explicitly.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8

@@ -70,6 +70,12 @@ test('Person has occupation, languages and links, but no employer or phone', () 
   assert.deepEqual(person.knowsAbout, data.SKILLS.flatMap((g) => g.items));
 });
 
+test('Person description is third person and matches the profile summary', () => {
+  const person = node('person');
+  assert.equal(person.description, data.PROFILE.summary);
+  assert.ok(!person.description.startsWith("I'm"));
+});
+
 test('apps list has one entry per app with a schema.org category', () => {
   const items = node('apps').itemListElement;
   assert.equal(items.length, data.APPS.length);
@@ -80,6 +86,13 @@ test('service lists every service title and points at the person', () => {
   const service = node('service');
   assert.equal(service.provider['@id'], 'https://jomerjorge.com/#person');
   assert.deepEqual(service.serviceType, [...data.SERVICES.business, ...data.SERVICES.global].map((s) => s.title));
+});
+
+test('service has the city-level address and no phone or price range', () => {
+  const service = node('service');
+  assert.equal(service.address.addressLocality, data.PROFILE.address.locality);
+  assert.ok(!('telephone' in service));
+  assert.ok(!('priceRange' in service));
 });
 
 test('JSON-LD never contains the mobile number', () => {

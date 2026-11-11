@@ -11,7 +11,7 @@ export type PortfolioData = typeof import('./portfolio.data');
 export function buildLlmsTxt(d: PortfolioData, year = new Date().getFullYear()): string {
   const p = d.PROFILE;
   const audience = (id: string) => d.AUDIENCES.find((a) => a.id === id);
-  const out: string[] = [`# ${p.name}`, '', `> ${p.title} based in ${p.location}, Philippines. ${p.headline}`];
+  const out: string[] = [`# ${p.name}`, '', `> ${p.summary} Based in ${p.location}, Philippines; works remotely (UTC+8).`];
   const section = (title: string, body: string[]) => {
     if (body.length) out.push('', `## ${title}`, '', ...body);
   };
@@ -61,7 +61,7 @@ function impactLines(i: Impact): string[] {
     '',
     `### ${i.org}`,
     '',
-    `${i.role}${i.start ? ` (since ${i.start})` : ''}. ${i.headline}.`,
+    `${i.role}${i.start ? ` (since ${i.start})` : ''}. ${i.headline}${/[.!?]$/.test(i.headline) ? '' : '.'}`,
     '',
     `- Challenge: ${i.challenge}`,
     `- ${i.builtLabel ?? 'Built'}: ${i.built}`,
@@ -87,6 +87,12 @@ export function buildJsonLd(d: PortfolioData): { '@context': string; '@graph': R
   const home = `${p.site}/`;
   const ref = (id: string) => ({ '@id': `${home}#${id}` });
   const skills = d.SKILLS.flatMap((g) => g.items);
+  const address = {
+    '@type': 'PostalAddress',
+    addressLocality: p.address.locality,
+    addressRegion: p.address.region,
+    addressCountry: p.address.country,
+  };
 
   return {
     '@context': 'https://schema.org',
@@ -115,15 +121,10 @@ export function buildJsonLd(d: PortfolioData): { '@context': string; '@graph': R
         url: home,
         image: `${home}${p.photo}`,
         jobTitle: p.title,
-        description: p.intro,
+        description: p.summary,
         email: `mailto:${p.email}`,
         alumniOf: { '@type': 'CollegeOrUniversity', name: p.school },
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: p.address.locality,
-          addressRegion: p.address.region,
-          addressCountry: p.address.country,
-        },
+        address,
         hasOccupation: {
           '@type': 'Occupation',
           name: p.title,
@@ -159,6 +160,7 @@ export function buildJsonLd(d: PortfolioData): { '@context': string; '@graph': R
         url: home,
         email: p.email,
         image: `${home}${p.photo}`,
+        address,
         areaServed: [{ '@type': 'Country', name: 'Philippines' }, 'Worldwide'],
         serviceType: [...d.SERVICES.business, ...d.SERVICES.global].map((s) => s.title),
         provider: ref('person'),

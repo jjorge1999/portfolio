@@ -72,6 +72,7 @@ export const PROFILE = {
   location: 'Calamba, Laguna · BGC, Taguig',
   education: 'BS Information Technology, STI College Calamba',
   // Used by the generated llms.txt and JSON-LD (see seo.ts), not shown on the page.
+  summary: 'Full-stack software engineer with 8 years of production experience in Angular, Node.js and NestJS. Builds websites, booking systems, inventory tools and AI add-ons for businesses.',
   fullName: 'Jomer Trillo Jorge',
   photo: 'jomer.webp',
   school: 'STI College Calamba',
