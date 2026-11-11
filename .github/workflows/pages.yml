@@ -39,12 +39,12 @@ jobs:
         if: steps.check.outputs.ok == 'true'
       - uses: actions/setup-node@v4
         if: steps.check.outputs.ok == 'true'
-        with: { node-version: 22 }
+        with: { node-version: 24 } # 22.18+ needed to run scripts/gen-llms.mts (built-in TypeScript support)
       - if: steps.check.outputs.ok == 'true'
         run: npm ci
       - name: Build for jomerjorge.com
         if: steps.check.outputs.ok == 'true'
-        run: npx ng build --base-href /
+        run: npm run gen:llms && npx ng build --base-href /
       - name: Deploy to Cloudflare Pages
         if: steps.check.outputs.ok == 'true'
         run: npx --yes wrangler@4 pages deploy dist/portfolio/browser --project-name=jomerjorge --branch=main --commit-dirty=true
@@ -55,10 +55,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22 }
+        with: { node-version: 24 } # 22.18+ needed to run scripts/gen-llms.mts (built-in TypeScript support)
       - run: npm ci
       - name: Build
-        run: npx ng build --base-href /${{ github.event.repository.name }}/
+        run: npm run gen:llms && npx ng build --base-href /${{ github.event.repository.name }}/
       - name: Publish to the gh-pages branch
         working-directory: dist/portfolio/browser
         run: |
