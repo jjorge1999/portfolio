@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as data from '../src/app/portfolio.data.ts';
-import { buildLlmsTxt } from '../src/app/seo.ts';
+import { buildJsonLd, buildLlmsTxt } from '../src/app/seo.ts';
 
 const PRIVATE = [data.PROFILE.mobile, data.PROFILE.mobileIntl, data.PROFILE.viber, '0919'];
 
@@ -45,4 +45,44 @@ test('llms.txt shows start years only and no undefined values', () => {
 test('llms.txt ends with a citation using the given year', () => {
   const txt = buildLlmsTxt(data, 2030);
   assert.match(txt, /## How to cite\n\n- Source: https:\/\/jomerjorge\.com\n- Author: Jomer Jorge\n- Updated: 2030\n$/);
+});
+
+const node = (id: string) => buildJsonLd(data)['@graph'].find((n) => n['@id'] === `https://jomerjorge.com/#${id}`) as any;
+
+test('JSON-LD survives a JSON round trip', () => {
+  const ld = buildJsonLd(data);
+  assert.deepEqual(JSON.parse(JSON.stringify(ld)), ld);
+  assert.equal(ld['@context'], 'https://schema.org');
+});
+
+test('JSON-LD keeps the existing node ids and adds the service', () => {
+  for (const id of ['website', 'profile', 'person', 'apps', 'service']) assert.ok(node(id), `missing #${id}`);
+});
+
+test('Person has occupation, languages and links, but no employer or phone', () => {
+  const person = node('person');
+  assert.equal(person['@type'], 'Person');
+  assert.equal(person.worksFor, undefined);
+  assert.equal(person.telephone, undefined);
+  assert.deepEqual(person.sameAs, [data.PROFILE.linkedin, 'https://github.com/jjorge1999']);
+  assert.deepEqual(person.knowsLanguage.map((l: any) => l.name), ['English', 'Filipino']);
+  assert.equal(person.hasOccupation['@type'], 'Occupation');
+  assert.deepEqual(person.knowsAbout, data.SKILLS.flatMap((g) => g.items));
+});
+
+test('apps list has one entry per app with a schema.org category', () => {
+  const items = node('apps').itemListElement;
+  assert.equal(items.length, data.APPS.length);
+  for (const li of items) assert.match(li.item.applicationCategory, /Application$/);
+});
+
+test('service lists every service title and points at the person', () => {
+  const service = node('service');
+  assert.equal(service.provider['@id'], 'https://jomerjorge.com/#person');
+  assert.deepEqual(service.serviceType, [...data.SERVICES.business, ...data.SERVICES.global].map((s) => s.title));
+});
+
+test('JSON-LD never contains the mobile number', () => {
+  const json = JSON.stringify(buildJsonLd(data));
+  for (const s of PRIVATE) assert.ok(!json.includes(s), `leaked ${s}`);
 });

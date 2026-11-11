@@ -72,3 +72,97 @@ function impactLines(i: Impact): string[] {
   for (const h of i.highlights ?? []) out.push(`- ${h.k}: ${h.v} (${h.note})`);
   return out;
 }
+
+const APP_CATEGORY: Record<string, string> = {
+  Business: 'BusinessApplication',
+  Health: 'HealthApplication',
+  Education: 'EducationalApplication',
+  Media: 'MultimediaApplication',
+  Utility: 'UtilitiesApplication',
+};
+
+/** schema.org graph written into the prerendered page (see App). No employer, no phone number. */
+export function buildJsonLd(d: PortfolioData): { '@context': string; '@graph': Record<string, unknown>[] } {
+  const p = d.PROFILE;
+  const home = `${p.site}/`;
+  const ref = (id: string) => ({ '@id': `${home}#${id}` });
+  const skills = d.SKILLS.flatMap((g) => g.items);
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        ...ref('website'),
+        url: home,
+        name: p.name,
+        inLanguage: 'en',
+        image: `${home}icon-512.png`,
+      },
+      {
+        '@type': 'ProfilePage',
+        ...ref('profile'),
+        url: home,
+        name: `${p.name} | ${p.title}`,
+        isPartOf: ref('website'),
+        mainEntity: ref('person'),
+      },
+      {
+        '@type': 'Person',
+        ...ref('person'),
+        name: p.name,
+        alternateName: [p.nickname, p.fullName],
+        url: home,
+        image: `${home}${p.photo}`,
+        jobTitle: p.title,
+        description: p.intro,
+        email: `mailto:${p.email}`,
+        alumniOf: { '@type': 'CollegeOrUniversity', name: p.school },
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: p.address.locality,
+          addressRegion: p.address.region,
+          addressCountry: p.address.country,
+        },
+        hasOccupation: {
+          '@type': 'Occupation',
+          name: p.title,
+          occupationLocation: { '@type': 'Country', name: 'Philippines' },
+          skills: skills.join(', '),
+        },
+        knowsAbout: skills,
+        knowsLanguage: p.languages.map((name) => ({ '@type': 'Language', name })),
+        sameAs: [p.linkedin, p.github],
+      },
+      {
+        '@type': 'ItemList',
+        ...ref('apps'),
+        name: `Web apps built by ${p.name}`,
+        itemListElement: d.APPS.map((a, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'WebApplication',
+            name: a.name,
+            url: `${a.url}/`,
+            ...(a.text ? { description: a.text } : {}),
+            applicationCategory: APP_CATEGORY[a.category] ?? 'WebApplication',
+            operatingSystem: 'Web',
+            creator: ref('person'),
+          },
+        })),
+      },
+      {
+        '@type': 'ProfessionalService',
+        ...ref('service'),
+        name: `${p.name} — Software Engineering`,
+        url: home,
+        email: p.email,
+        image: `${home}${p.photo}`,
+        areaServed: [{ '@type': 'Country', name: 'Philippines' }, 'Worldwide'],
+        serviceType: [...d.SERVICES.business, ...d.SERVICES.global].map((s) => s.title),
+        provider: ref('person'),
+      },
+    ],
+  };
+}
