@@ -44,9 +44,14 @@ test('llms.txt covers every impact, app, service, client and skill', () => {
   for (const s of expected) assert.ok(txt.includes(s), `missing ${s}`);
 });
 
-test('llms.txt shows start years only and no undefined values', () => {
+test('llms.txt gives no dates for roles and no undefined values', () => {
   const txt = buildLlmsTxt(data, 2030);
-  assert.ok(txt.includes('(since 2022)'));
+  for (const i of data.IMPACTS) {
+    const roleLine = txt.split('\n').find((l) => l.startsWith(`${i.role}.`));
+    assert.ok(roleLine, `missing role line for ${i.org}`);
+    assert.ok(!/\b(19|20)\d\d\b/.test(roleLine), `date in role line: ${roleLine}`);
+  }
+  assert.ok(!txt.includes('(since'));
   assert.ok(!/\b20\d\d\s*[–-]\s*(20\d\d|present)/i.test(txt), 'found a date range');
   assert.ok(!txt.includes('undefined'));
 });

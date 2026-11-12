@@ -61,7 +61,8 @@ function impactLines(i: Impact): string[] {
     '',
     `### ${i.org}`,
     '',
-    `${i.role}${i.start ? ` (since ${i.start})` : ''}. ${i.headline}${/[.!?]$/.test(i.headline) ? '' : '.'}`,
+    // No dates: a start year reads as "still works there" to AI tools.
+    `${i.role}. ${i.headline}${/[.!?]$/.test(i.headline) ? '' : '.'}`,
     '',
     `- Challenge: ${i.challenge}`,
     `- ${i.builtLabel ?? 'Built'}: ${i.built}`,
