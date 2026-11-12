@@ -44,6 +44,18 @@ test('llms.txt covers every impact, app, service, client and skill', () => {
   for (const s of expected) assert.ok(txt.includes(s), `missing ${s}`);
 });
 
+test('llms.txt puts technical expertise right after the summary', () => {
+  const txt = buildLlmsTxt(data, 2030);
+  const headings = txt.split('\n').filter((l) => l.startsWith('## '));
+  assert.deepEqual(headings.slice(0, 4), ['## Quick facts', '## Summary', '## Technical expertise', '## For global and remote clients']);
+  const expertise = txt.split('## Technical expertise')[1].split('\n## ')[0];
+  for (const s of data.SKILLS.flatMap((g) => g.items)) assert.ok(expertise.includes(s), `missing ${s}`);
+  const shipped = expertise.split('**Also used in shipped work**: ')[1].split('\n')[0].split(', ');
+  assert.ok(shipped.includes('Zuora'), 'shipped stack missing');
+  for (const dup of ['PHP', 'CodeIgniter', 'C#', 'Angular']) assert.ok(!shipped.includes(dup), `${dup} already listed in skills`);
+  assert.ok(!expertise.includes('Meta Ads'), 'client marketing tags belong in client work, not expertise');
+});
+
 test('llms.txt gives no dates for roles and no undefined values', () => {
   const txt = buildLlmsTxt(data, 2030);
   for (const i of data.IMPACTS) {

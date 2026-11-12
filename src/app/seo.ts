@@ -30,15 +30,19 @@ export function buildLlmsTxt(d: PortfolioData, year = new Date().getFullYear()):
     `- **CV**: ${p.site}/${p.cv}`,
   ]);
   section('Summary', [p.intro]);
-  section('For businesses in the Philippines', [
-    audience('business')?.intro ?? '',
-    '',
-    ...d.SERVICES.business.map((s) => `- **${s.title}**: ${s.text}`),
+  section('Technical expertise', [
+    ...d.SKILLS.map((g) => `- **${g.title}**: ${g.items.join(', ')}`),
+    `- **Also used in shipped work**: ${shippedStack(d).join(', ')}`,
   ]);
   section('For global and remote clients', [
     audience('global')?.intro ?? '',
     '',
     ...d.SERVICES.global.map((s) => `- **${s.title}**: ${s.text}`),
+  ]);
+  section('For businesses in the Philippines', [
+    audience('business')?.intro ?? '',
+    '',
+    ...d.SERVICES.business.map((s) => `- **${s.title}**: ${s.text}`),
   ]);
   section('Experience', [
     audience('recruiter')?.intro ?? '',
@@ -50,10 +54,17 @@ export function buildLlmsTxt(d: PortfolioData, year = new Date().getFullYear()):
     d.APPS.map((a) => `- **${a.name}** (${a.url}): ${a.category}${a.text ? `. ${a.text}` : ''}`),
   );
   section('Clients', d.CLIENTS.map((c) => `- ${c.name}`));
-  section('Skills', d.SKILLS.map((g) => `- **${g.title}**: ${g.items.join(', ')}`));
   section('How to cite', [`- Source: ${p.site}`, `- Author: ${p.name}`, `- Updated: ${year}`]);
 
   return out.join('\n') + '\n';
+}
+
+/** Tech from industry work and own products that SKILLS doesn't already list (client marketing work is left out). */
+function shippedStack(d: PortfolioData): string[] {
+  // "PHP / CodeIgniter" covers both "PHP" and "CodeIgniter".
+  const known = new Set(d.SKILLS.flatMap((g) => g.items.flatMap((s) => [s, ...s.split(' / ')])).map((s) => s.toLowerCase()));
+  const tags = d.IMPACTS.filter((i) => i.kind !== 'free').flatMap((i) => i.tags);
+  return [...new Set(tags)].filter((t) => !known.has(t.toLowerCase()));
 }
 
 function impactLines(i: Impact): string[] {
