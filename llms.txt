@@ -1,0 +1,158 @@
+# Jomer Jorge
+
+> Full-stack software engineer with 8 years of production experience in Angular, Node.js and NestJS. Builds websites, booking systems, inventory tools and AI add-ons for businesses. Based in Calamba, Laguna · BGC, Taguig, Philippines; works remotely (UTC+8).
+
+## Quick facts
+
+- **Name**: Jomer Jorge ("Jomz"), full name Jomer Trillo Jorge
+- **Role**: Full-stack software engineer
+- **Location**: Calamba, Laguna · BGC, Taguig, Philippines (UTC+8)
+- **Education**: BS Information Technology, STI College Calamba
+- **Languages**: English, Filipino
+- **Production code**: 8 yrs (Writing production software since 2018)
+- **Software companies**: 3 (Infor, Placester (US) and Microbitworx)
+- **Products founded**: 2 (SwiftStay and Benepisyo, built myself)
+- **Client brands**: 4 (Including Fujifilm and Alpha Laboratory Calamba)
+- **Email**: jomer_jorge@yahoo.com
+- **LinkedIn**: https://www.linkedin.com/in/jomer-trillo-jorge-765597128/
+- **GitHub**: https://github.com/jjorge1999
+- **Website**: https://jomerjorge.com
+- **CV**: https://jomerjorge.com/Jomer-Jorge-CV.pdf
+
+## Summary
+
+I'm Jomer “Jomz” Jorge. I've spent eight years building software for enterprise ERP, US real-estate SaaS and Philippine small businesses. I start from the business problem, write the code, deploy it, and stay to support it.
+
+## Technical expertise
+
+- **Front end**: Angular, TypeScript, JavaScript, HTML / CSS, jQuery, Ant Design
+- **Back end**: Node.js, NestJS, GraphQL / Apollo, PHP / CodeIgniter, Java / Spring Boot, C# / .NET
+- **Data & cloud**: MySQL, Redis, Cloudflare Workers, D1, AWS, Datadog
+- **Practice**: Git / Gitflow, Scrum, TDD · xUnit, CI/CD, Clean code, Graphic design
+- **Also used in shipped work**: Automated tests, GitLab, Zuora, WordPress API, WordPress, Cloudflare, E-wallet payments, iCal
+
+## For global and remote clients
+
+I'm Jomer “Jomz” Jorge. Eight years shipping production software, including enterprise ERP at Infor and SaaS for US real-estate brokers. I work in Angular, Node and NestJS, and I overlap with Asia-Pacific, Australian and US evening hours.
+
+- **Product engineering**: Angular front ends and Node/NestJS services, from first commit to production.
+- **APIs & integrations**: GraphQL and REST APIs, billing (Zuora), payments and third-party integrations.
+- **Cloud & serverless**: Cloudflare Workers and D1, AWS serverless and EC2, with CI/CD.
+- **AI features**: LLM-powered assistants and automations built on the Claude API, with usage caps.
+
+## For businesses in the Philippines
+
+I'm Jomer “Jomz” Jorge. I build websites, booking systems, inventory tools and AI add-ons for carinderias, resorts, clinics and shops. You tell me what slows you down, I build the fix, and I stay to support it.
+
+- **Business website**: A fast, mobile-first site your customers can find on Google and Facebook.
+- **Booking & reservations**: Online bookings with GCash or Maya deposits and a simple owner dashboard.
+- **Inventory & POS**: Track stock and daily sales for your store, carinderia or canteen.
+- **AI assistant**: Auto-replies and a chat helper that answers customers in Tagalog, Bisaya or English.
+- **Automation & reports**: Turn spreadsheets into reports and schedule your Facebook posts automatically.
+
+## Experience
+
+I'm Jomer “Jomz” Jorge, an Angular and Node engineer with enterprise cloud ERP experience at Infor and NestJS and Java microservices for Placester, a US real-estate SaaS. BS Information Technology, STI College Calamba.
+
+### Infor PSSC
+
+Software Engineer · Cloud ERP. Shipped reliable releases of a global, multi-tenant cloud ERP.
+
+- Challenge: Every release reaches many customers at once, so a regression hits everyone.
+- Built: Angular features with automated tests, plus validation and verification before each release.
+- Result: Customers on released versions stayed supported, with work shipped alongside analysts and architects across time zones.
+- Stack: Angular, TypeScript, Automated tests, GitLab
+- Link: https://www.infor.com
+- Product: Multi-tenant (Global cloud ERP for enterprise customers)
+- Every release: Tested (Automated tests, validation and verification)
+- Team: Across time zones (Delivered with analysts and architects)
+
+### Placester Inc.
+
+Software Engineer · US real-estate SaaS. Built the service that decides what every paying agent can use.
+
+- Challenge: Billing, feature access and client WordPress sites lived in separate systems.
+- Built: A NestJS entitlement service tied to Zuora subscriptions, and PHP bridges from WordPress to the core Java services.
+- Result: A plan change in billing now changes what an agent or brokerage can use, without manual updates.
+- Stack: NestJS, Zuora, Java / Spring Boot, WordPress API, AWS
+- Link: https://placester.com
+- Billing: Zuora (Subscriptions drive what each agent can use)
+- Plan changes: Automatic (No manual updates to feature access)
+- Market: US (Real-estate SaaS for agents and brokerages)
+
+### Microbitworx Solution
+
+Full-stack Engineer · Laguna. Gave a manufacturer live visibility of work in progress.
+
+- Challenge: Local clients needed custom systems built, deployed and supported end to end.
+- Built: A WIP tracking system, a service management system in CodeIgniter, and the Alpha Laboratory website.
+- Result: Clients went live on their own servers, with staff trained by me and critical issues handled same day.
+- Stack: PHP, CodeIgniter, C#, MySQL, WordPress
+- Critical issues: Same day (Handled for every live client)
+- Delivered: 3 systems (WIP tracking, service management, Alpha Laboratory site)
+- Go-live: On-site (On client servers, with staff trained by me)
+
+## Products and client work
+
+
+### Thamara's Lechon & Carinderia
+
+Client · Agusan del Sur. Showed the owners where their profit really comes from.
+
+- Challenge: Lechon brought in the most sales, so it looked like the star of the business.
+- Built: A 30-day income and expense review in plain Filipino, plus Facebook ad management and automated daily posts.
+- Result: Carinderia and BBQ carry most of the profit. Casual Bisaya ad copy far outperformed generic English posts.
+- Stack: Data analysis, Meta Ads, Buffer automation
+- Reviewed: 30 days (Of income and expenses, explained in plain Filipino)
+- Real profit driver: Carinderia + BBQ (Not lechon, the biggest seller)
+- Best-performing ads: Casual Bisaya (Far outperformed generic English posts)
+
+### SwiftStay
+
+Founder · Rental marketplace. Lets transient-house owners take bookings with no credit card required.
+
+- Challenge: Most Filipino guests pay by e-wallet, and big platforms take a cut of every night.
+- Built: A booking platform with GCash, Maya, QRPh and GrabPay checkout, and iCal sync with Airbnb and Booking.com.
+- Result: Owners keep 100% of their nightly rate and see fewer double-bookings across channels.
+- Stack: Angular, Cloudflare, E-wallet payments, iCal
+- Link: https://swiftstay.uk
+- Owner keeps: 100% (Of the nightly rate, no platform cut)
+- Checkout: E-wallets (GCash, Maya, QRPh and GrabPay, no credit card)
+- Calendar sync: iCal (With Airbnb and Booking.com, fewer double-bookings)
+
+### Benepisyo
+
+Free civic app · Calamba pilot. Helps everyday Filipinos find the government benefits they already qualify for.
+
+- Challenge: Seniors, PWDs and solo parents miss national and LGU benefits because the information is scattered.
+- What I'm building: A free, Tagalog-first web app covering all 1,642 cities and municipalities, with amounts, requirements and the source behind every benefit. Fully verified for Calamba first.
+- Goal: Anyone can see what they're entitled to in a few taps, at no cost.
+- Stack: Angular, Ant Design, Cloudflare Workers, D1
+- Link: https://jjorge1999.github.io/benepisyo/
+- Coverage: 1,642 (Cities and municipalities in the Philippines)
+- Cost to users: Free (Tagalog-first, with the source behind every benefit)
+- Pilot: Calamba (Fully verified first)
+
+## Live web apps
+
+- **AgriLink** (https://agrilink.jomerjorge.com): Business. B2B agri supply platform.
+- **DoctorQ** (https://doctorq.jomerjorge.com): Health. Check the live queue number for your doctor before you leave the house.
+- **JJM Inventory** (https://jjm-inventory.jomerjorge.com): Business
+- **LearnWithMe** (https://learnwithmethamara.jomerjorge.com): Education
+- **MikroVoucher** (https://jjmwifi.jomerjorge.com): Business. Generate, customize and manage MikroTik hotspot WiFi vouchers for your clients.
+- **PhotoBooth** (https://photobooth.jomerjorge.com): Media. Photo booth kiosk: capture, print and share your photos.
+- **FileTransfer Free** (https://free-file-transfer.jomerjorge.com): Utility. Upload files, get a share link and let anyone download. No account required.
+- **MetadataFixer** (https://metadatafixer.jomerjorge.com): Utility. Restore dates, GPS location and EXIF data to Google Takeout photos.
+
+## Clients
+
+- Fujifilm
+- Alpha Laboratory Calamba
+- 7layer.tech
+- The Grey Rental House Nasugbu
+
+## How to cite
+
+- Source: https://jomerjorge.com
+- Author: Jomer Jorge
+- Updated: 2026

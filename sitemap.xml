@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Covers jomerjorge.com and its app subdomains. Cross-subdomain URLs are accepted because
+     jomerjorge.com is verified as a Domain property in Search Console. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://jomerjorge.com/</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+  <url>
+    <loc>https://jomerjorge.com/Jomer-Jorge-CV.pdf</loc>
+    <lastmod>2026-10-22</lastmod>
+  </url>
+  <url><loc>https://agrilink.jomerjorge.com/</loc></url>
+  <url><loc>https://doctorq.jomerjorge.com/</loc></url>
+  <url><loc>https://jjm-inventory.jomerjorge.com/</loc></url>
+  <url><loc>https://learnwithmethamara.jomerjorge.com/</loc></url>
+  <url><loc>https://jjmwifi.jomerjorge.com/</loc></url>
+  <url><loc>https://photobooth.jomerjorge.com/</loc></url>
+  <url><loc>https://free-file-transfer.jomerjorge.com/</loc></url>
+  <url><loc>https://metadatafixer.jomerjorge.com/</loc></url>
+</urlset>
